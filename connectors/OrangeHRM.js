@@ -29,14 +29,27 @@ class OrangeHRMConnector{
         }
     }
 
-    async addBonusSalary(id, year, amount){
-        var formData = new FormData();
-        formData.append('year', year);
-        formData.append('value', amount);
-
+    async resolveEmployeeId(id){
         try{
+            var request = await axios.get(
+                this.url+'/api/v1/employee/search?code=' + id,
+                {
+                    headers:{
+                        Authorization: 'Bearer ' + this.token
+                    }
+                }
+            );
+            return request.data.data[0].employeeId;
+        } catch (error){
+            console.error('ERROR OrangeHRM | User with given ID was not found: ' + error);
+        }
+    }
+
+    async addBonusSalary(id, year, amount){
+        try{
+            var emp_id = await this.resolveEmployeeId(id);
             var request = await axios.post(
-                this.url+'/api/v1/employee/' + id + '/bonussalary',
+                this.url+'/api/v1/employee/' + emp_id + '/bonussalary',
                 {
                     'year':year,
                     'value':amount
