@@ -1,4 +1,5 @@
 const axios = require('axios');
+const FormData = require('form-data');
 
 class OrangeHRMConnector{
 
@@ -46,21 +47,22 @@ class OrangeHRMConnector{
     }
 
     async addBonusSalary(id, year, amount){
+        var formData = new FormData();
+        formData.append('year', year);
+        formData.append('value', amount);
+
         try{
             var emp_id = await this.resolveEmployeeId(id);
             var request = await axios.post(
                 this.url+'/api/v1/employee/' + emp_id + '/bonussalary',
-                {
-                    'year':year,
-                    'value':amount
-                },
+                formData,
                 {
                     headers:{
-                        Authorization: 'Bearer ' + this.token
+                        Authorization: 'Bearer ' + this.token,
+                        'Content-Type':'multipart/form-data; boundary='+formData.getBoundary()
                     }
                 }
             );
-            console.log(request);
             console.log('OrangeHRM | bonus salary added');
         } catch (error){
             console.error('ERROR OrangeHRM | adding bonus salary failed: ' + error);
