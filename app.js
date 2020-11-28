@@ -36,3 +36,11 @@ app.get('/notes', (req, res) => { //specifying a first get-request
 app.get('/test', (req,res) => {
    oHRM.addBonusSalary(8, 2021, 1000000);
 });
+
+
+const OpenCRXConnector = require('./connectors/OpenCRX');
+const oCRX = new OpenCRXConnector('https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel.', 'guest', 'guest');
+
+app.get('/jonasTest'), (req, res) => {
+   oCRX.getRatingByGovernmentId();
+}
