@@ -41,6 +41,18 @@ app.get('/test', (req,res) => {
 const OpenCRXConnector = require('./connectors/OpenCRX');
 const oCRX = new OpenCRXConnector('https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel.', 'guest', 'guest');
 
-app.get('/jonasTest'), (req, res) => {
-   oCRX.getRatingByGovernmentId();
-}
+app.get('/testUser', (req, res) => {
+   res.send(oCRX.getUserByGovernMentId(91337));
+});
+
+app.get('/testSalesOrder', (req, res) => {
+   res.send(oCRX.getSalesOrderByAccountId('xri://@openmdx*org.opencrx.kernel.account1/provider/CRX/segment/Standard/account/9ENFSDRCBESBTH2MA4T2TYJFL'));
+});
+
+app.get('/testContract', (req, res) => {
+   res.send(oCRX.getContractPositions('9ENGNFGDLDQSPH2MA4T2TYJFL'));
+});
+
+app.get('/testRating', (req, res) => {
+   res.send(oCRX.getRatingByGovernmentId('9ENGNFGDLDQSPH2MA4T2TYJFL'));
+});
