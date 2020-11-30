@@ -42,7 +42,9 @@ const OpenCRXConnector = require('./connectors/OpenCRX');
 const oCRX = new OpenCRXConnector('https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel.', 'guest', 'guest');
 
 app.get('/testUser', (req, res) => {
-   res.send(oCRX.getUserByGovernMentId(91337));
+   (async function(){
+      res.send(await oCRX.getUserByGovernmentId(91337));
+   })();
 });
 
 app.get('/testSalesOrder', (req, res) => {

@@ -9,10 +9,10 @@ class OpenCRXConnector{
     }
 
 
-    async getUserByGovernMentId(id){
+    async getUserByGovernmentId(id){
         try{
             var request = await axios.get(
-                this.url+ 'account1/provider/CRX/segment/Standard/account?query=thereExistsGovernmentId().equalTo(%22'+id+'%22)',
+                this.url+ 'account1/provider/CRX/segment/Standard/account?query=thereExistsGovernmentId%28%29.equalTo%28%22'+id+'%22%29',
                 {
                     auth:{
                         'username':this.username,
@@ -20,9 +20,7 @@ class OpenCRXConnector{
                     }
                 }
             );
-            console.log('OpenCRX | rating user');
-            console.log(request.data);
-            return request.data;
+            return request.data.objects[0];
         } catch (error){
             console.error('ERROR OpenCRX | something has gone wrong: ' + error);
         }
