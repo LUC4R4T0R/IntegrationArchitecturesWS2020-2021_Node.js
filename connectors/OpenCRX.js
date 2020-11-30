@@ -29,7 +29,7 @@ class OpenCRXConnector{
     async getSalesOrderByAccountId(salesman){
         try{
             var request = await axios.get(
-                this.url+ 'contract1/provider/CRX/segment/Standard/salesOrder?query=thereExistsSalesRep().equalTo(%22'+salesman+'%22)',
+                this.url+ 'contract1/provider/CRX/segment/Standard/salesOrder?query=thereExistsSalesRep%28%29.equalTo%28%22'+salesman+'%22%29',
                 {
                     auth:{
                         'username':this.username,
@@ -37,9 +37,7 @@ class OpenCRXConnector{
                     }
                 }
             );
-            console.log('OpenCRX | rating user');
-            console.log(request.data);
-            return request.data;
+            return request.data.objects;
         } catch (error){
             console.error('ERROR OpenCRX | something has gone wrong: ' + error);
         }
@@ -56,15 +54,13 @@ class OpenCRXConnector{
                     }
                 }
             );
-            console.log('OpenCRX | rating user');
-            console.log(request.data);
-            return request.data;
+            return request.data.objects;
         } catch (error){
             console.error('ERROR OpenCRX | something has gone wrong: ' + error);
         }
     }
 
-    async getRatingByGovernmentId(contract_id){
+    async getRating(contract_id){
         try{
             var request = await axios.get(
                 this.url+'contract1/provider/CRX/segment/Standard/salesOrder/'+contract_id+'/rating',
@@ -75,8 +71,6 @@ class OpenCRXConnector{
                     }
                 }
             );
-            console.log('OpenCRX | rating obtained');
-            console.log(request.data);
             return request.data;
         } catch (error){
             console.error('ERROR OpenCRX | something has gone wrong: ' + error);

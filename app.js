@@ -48,13 +48,19 @@ app.get('/testUser', (req, res) => {
 });
 
 app.get('/testSalesOrder', (req, res) => {
-   res.send(oCRX.getSalesOrderByAccountId('xri://@openmdx*org.opencrx.kernel.account1/provider/CRX/segment/Standard/account/9ENFSDRCBESBTH2MA4T2TYJFL'));
+   (async function(){
+      res.send(await oCRX.getSalesOrderByAccountId('xri://@openmdx*org.opencrx.kernel.account1/provider/CRX/segment/Standard/account/9ENFSDRCBESBTH2MA4T2TYJFL'));
+   })();
 });
 
 app.get('/testContract', (req, res) => {
-   res.send(oCRX.getContractPositions('9ENGNFGDLDQSPH2MA4T2TYJFL'));
+   (async function(){
+      res.send(await oCRX.getContractPositions('9ENGNFGDLDQSPH2MA4T2TYJFL'));
+   })();
 });
 
 app.get('/testRating', (req, res) => {
-   res.send(oCRX.getRatingByGovernmentId('9ENGNFGDLDQSPH2MA4T2TYJFL'));
+   (async function(){
+      res.send(await oCRX.getRating('9ENGNFGDLDQSPH2MA4T2TYJFL'));
+   })();
 });
