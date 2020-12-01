@@ -5,6 +5,7 @@
   "MongoDB_port": 27017,
   "MongoDB_username": "",
   "MongoDB_password": "",
+  "MongoDB_database": "",
 
   "OrangeHRM_username": "",
   "OrangeHRM_password": "",
