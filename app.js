@@ -22,21 +22,22 @@ const EvaluationRecordEntry = require('./api/EvaluationRecordEntry');
 
 //starting database-connection and local API
 const MongoClient = mongodb.MongoClient;
-var db;
 var auth = "";
 if (config["MongoDB_username"] !== ""){
    auth = config["MongoDB_username"] + ":" + config["MongoDB_username"] + "@";
 }
-MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config["MongoDB_port"] + "/"+ config["MongoDB_database"], function(err, database) {
+MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config["MongoDB_port"] + "/", function(err, database) {
    if(err) {
       throw err;
    }
-   db = database;
+
+   app.set('db', database.db(config["MongoDB_database"]));
 
    app.listen(config["API_port"], () => {
       console.log('Server started.');
    });
 });
+
 
 /*
    Routes
