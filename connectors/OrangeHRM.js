@@ -11,6 +11,10 @@ class OrangeHRMConnector{
         this.getToken();
     }
 
+    /**
+     * retrieves a bearer-token from the OrangeHRM-Server
+     * @returns {Promise<void>}
+     */
     async getToken(){
         try{
             var request = await axios.post(
@@ -30,6 +34,11 @@ class OrangeHRMConnector{
         }
     }
 
+    /**
+     * resolves the OrangeHRM-internal User-ID from the company-wide Id
+     * @param id company-wide employee-Id
+     * @returns {Promise<*>}
+     */
     async resolveEmployeeId(id){
         try{
             var request = await axios.get(
@@ -46,6 +55,13 @@ class OrangeHRMConnector{
         }
     }
 
+    /**
+     * adds a bonus salary to the specified salesman
+     * @param id Id of a salesman
+     * @param year Year, in which the salary is / was payed
+     * @param amount Amount of money payed
+     * @returns {Promise<void>}
+     */
     async addBonusSalary(id, year, amount){
         var formData = new FormData();
         formData.append('year', year);
