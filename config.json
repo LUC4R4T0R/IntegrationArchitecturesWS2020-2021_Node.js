@@ -1,8 +1,15 @@
 {
   "API_port": 8080,
+
+  "MongoDB_domain": "localhost",
+  "MongoDB_port": 27017,
+  "MongoDB_username": "",
+  "MongoDB_password": "",
+
   "OrangeHRM_username": "",
   "OrangeHRM_password": "",
   "OrangeHRM_URL": "https://sepp-hrm.inf.h-brs.de/symfony/web/index.php",
+
   "OpenCRX_username": "",
   "OpenCRX_password": "",
   "OpenCRX_URL": "https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel."
