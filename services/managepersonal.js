@@ -53,8 +53,8 @@ exports.readEvaluationRecord = async function (db, id, year) {
         return db.collection("records").findOne({id: parseInt(id), evaluationrecord:{year: parseInt(year)}}, function (err, result) {
         });
     } else if (year !== undefined) {
-        return db.collection("records").findOne({id: parseInt(id)}, function (err, result) {
-        });
+        return db.collection("records").find({id: parseInt(id)}.toArray(function (err, result) {
+        }));
     }
 }
 
