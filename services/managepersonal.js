@@ -7,22 +7,15 @@ exports.createSalesman = function (db, salesman) {
 }
 
 //read Salesman
-exports.readSalesman = function (db, salesmanId, query) {
+exports.readSalesman = async function (db, salesmanId, query) {
     if (salesmanId === undefined && query === undefined) {
-        db.collection("salesman").findOne({}).toArray(function (err, result) {
-            if (err) throw err;
-            console.log(result);
-        });
+        return db.collection("salesman").find({}).toArray();
     } else if (salesmanId === undefined) {
-        db.collection("salesman").findOne(query).toArray(function (err, result) {
-            if (err) throw err;
-            console.log(result);
-        });
+        return db.collection("salesman").find(query).toArray();
     } else if (query === undefined) {
-        db.collection("salesman").findOne({id: salesmanId}, function (err, result) {
-            if (err) throw err;
-            console.log(result.firstname + " " + result.lastname);
-        });
+        var test = await db.collection("salesman").findOne({id: salesmanId});
+        console.log(test);
+        return test;
     } else {
         //throw exception
     }
