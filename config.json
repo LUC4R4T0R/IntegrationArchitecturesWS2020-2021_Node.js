@@ -1,5 +1,5 @@
 {
-  "apiPort": 8080,
+  "API_port": 8080,
   "OrangeHRM_username": "",
   "OrangeHRM_password": "",
   "OrangeHRM_URL": "https://sepp-hrm.inf.h-brs.de/symfony/web/index.php",
