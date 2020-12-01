@@ -1,47 +1,100 @@
 //create Salesman
-function createSalesman(db, salesman){
-    db.collection("salesman").insertOne(salesman, function(err, res) {
+exports.createSalesman = function (db, salesman) {
+    db.collection("salesman").insertOne(salesman, function (err, res) {
         if (err) throw err;
         console.log("1 Salesman inserted");
     });
 }
 
 //read Salesman
-function readSalesmanById(db, salesmanId, query){
-    if(salesmanId === undefined && query === undefined){
-        db.collection("salesman").findOne({}).toArray(function(err, result) {
+exports.readSalesman = function (db, salesmanId, query) {
+    if (salesmanId === undefined && query === undefined) {
+        db.collection("salesman").findOne({}).toArray(function (err, result) {
             if (err) throw err;
             console.log(result);
         });
-    } else if(salesmanId === undefined){
-        db.collection("salesman").findOne(query).toArray(function(err, result) {
+    } else if (salesmanId === undefined) {
+        db.collection("salesman").findOne(query).toArray(function (err, result) {
             if (err) throw err;
             console.log(result);
         });
-    }else if(query === undefined){
-        db.collection("salesman").findOne({id:salesmanId}, function(err, result) {
+    } else if (query === undefined) {
+        db.collection("salesman").findOne({id: salesmanId}, function (err, result) {
             if (err) throw err;
             console.log(result.firstname + " " + result.lastname);
         });
-    }else{
+    } else {
         //throw exception
     }
 }
 
 //update Salesman
-function updateSalesman(db, salesman){
-    var newvalues = { $set: {firstname: salesman.firstname, address: salesman.lastname} };
-    db.collection("salesman").updateOne({id: salesman.id}, newvalues, function(err, res) {
+exports.updateSalesman = function (db, salesman) {
+    var newvalues = {$set: {firstname: salesman.firstname, address: salesman.lastname}};
+    db.collection("salesman").updateOne({id: salesman.id}, newvalues, function (err, res) {
         if (err) throw err;
         console.log("1 Salesman updated");
     });
 }
 
 //delete Salesman
-function deleteSalesman(db, id){
-    db.collection("salesman").deleteOne({id: id}, function(err, obj){
+exports.deleteSalesman = function (db, id) {
+    db.collection("salesman").deleteOne({id: id}, function (err, obj) {
         if (err) throw err;
-        console.log("1 Salesman updated");
+        console.log("1 Salesman deleted");
     });
 }
 
+//create Evaluationrecord
+exports.createEvaluationrecord = function (db, id, evaluationrecord) {
+    db.collection("records").insertOne({id: id, evaluationrecord: evaluationrecord}, function (err, res) {
+        if (err) throw err;
+        console.log("1 Evaluationrecord inserted");
+    });
+}
+
+//read Evaluationrecord
+exports.readEvaluationrecord = function (db, year, id) {
+    if (year === undefined && id === undefined) {
+        db.collection("records").findOne({}).toArray(function (err, result) {
+            if (err) throw err;
+            console.log(result);
+        });
+    } else if (year !== undefined && id !== undefined) {
+        db.collection("records").findOne({id: id, year: evaluationrecord.year}, function (err, result) {
+            if (err) throw err;
+            console.log(result);
+        });
+    } else {
+        //throw exception
+    }
+}
+
+//delete Evaluationrecord
+exports.deleteEvaluationrecord = function (db, year, id) {
+    db.collection("salesman").deleteOne({id: id, year: evaluationrecord.year}, function (err, obj) {
+        if (err) throw err;
+        console.log("1 Evaluationrecord deleted");
+    });
+}
+
+
+//create Evaluationrecordentry
+exports.createEvaluationrecordentry = function (db, id, year,evaluationrecordentry) {
+
+}
+
+//read Evaluationrecordentry
+exports.readEvaluationrecordentry = function (db, year, id) {
+
+}
+
+//update Evaluationrecordentry
+exports.updateEvaluationrecordentry = function (db, salesman) {
+
+}
+
+//delete Evaluationrecordentry
+exports.deleteEvaluationrecordentry = function (db, year, id) {
+
+}
