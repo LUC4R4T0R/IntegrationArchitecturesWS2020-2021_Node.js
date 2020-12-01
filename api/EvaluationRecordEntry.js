@@ -1,4 +1,4 @@
-var EvaluationRecordEntry = require('/models/EvaluationRecordEntry');
+var EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
 
 exports.list = function(req, res){
 
