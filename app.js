@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json()); //adds support for json encoded bodies
 const fs = require('fs');
+const mongodb = require('mongodb');
 
 const rawConfig = fs.readFileSync('./config.json');
 const config = JSON.parse(rawConfig);
@@ -12,8 +13,21 @@ const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_u
 const OpenCRXConnector = require('./connectors/OpenCRX');
 const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
 
-app.listen(config["API_port"], () => {
-   console.log('Server started.');
+const MongoClient = mongodb.MongoClient;
+var db;
+var auth = "";
+if (config["MongoDB_username"] !== ""){
+   auth = config["MongoDB_username"] + ":" + config["MongoDB_username"] + "@";
+}
+MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config["MongoDB_port"] + "/"+ config["MongoDB_database"], function(err, database) {
+   if(err) {
+      throw err;
+   }
+   db = database;
+
+   app.listen(config["API_port"], () => {
+      console.log('Server started.');
+   });
 });
 
 app.get('/test', (req,res) => {
