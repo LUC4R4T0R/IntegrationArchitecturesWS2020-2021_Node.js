@@ -1,45 +1,24 @@
 const express = require('express'); //load the express module
 const app = express();
-
-const OrangeHRMConnector = require('./connectors/OrangeHRM');
-const oHRM = new OrangeHRMConnector('https://sepp-hrm.inf.h-brs.de/symfony/web/index.php', 'demouser', '*Safb02da42Demo$');
-
-app.get('/hello/:name', (req, res) => { //specifying a first get-request
-   console.log(req.params.name + ' visited the page');
-   res.send('Hello my name is ' + req.params.name + '.');
-});
-
-app.listen(8081, () => {
-   console.log('Server started.');
-});
-
 const bodyParser = require('body-parser');
 app.use(bodyParser.json()); //adds support for json encoded bodies
+const fs = require('fs');
 
-var notes = [];
+const rawConfig = fs.readFileSync('./config.json');
+const config = JSON.parse(rawConfig);
 
-app.post('/notes/add', (req,res) => {
-   if(req.body.text !== undefined){
-      console.log('new note!');
-      notes.push(req.body.text);
-      res.send('note saved');
-   }else{
-      res.status(400).send('no text specified!');
-   }
-});
+const OrangeHRMConnector = require('./connectors/OrangeHRM');
+const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_username"], config["OrangeHRM_password"]);
+const OpenCRXConnector = require('./connectors/OpenCRX');
+const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
 
-app.get('/notes', (req, res) => { //specifying a first get-request
-   console.log('notes being read');
-   res.send(notes.join('<br><br>'));
+app.listen(config["API_port"], () => {
+   console.log('Server started.');
 });
 
 app.get('/test', (req,res) => {
    oHRM.addBonusSalary(8, 2021, 1000000);
 });
-
-
-const OpenCRXConnector = require('./connectors/OpenCRX');
-const oCRX = new OpenCRXConnector('https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel.', 'guest', 'guest');
 
 app.get('/testUser', (req, res) => {
    (async function(){
