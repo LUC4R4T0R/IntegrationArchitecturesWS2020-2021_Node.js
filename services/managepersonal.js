@@ -47,14 +47,11 @@ exports.createEvaluationRecord = async function (db, id, evaluationrecord) {
 //read EvaluationRecord
 exports.readEvaluationRecord = async function (db, id, year) {
     if (year === undefined && id === undefined) {
-        return db.collection("records").find({}).toArray(function (err, result) {
-        });
+        return db.collection("records").find({}).toArray();
     } else if (year !== undefined && id !== undefined) {
-        return db.collection("records").findOne({id: parseInt(id), evaluationrecord:{year: parseInt(year)}}, function (err, result) {
-        });
-    } else if (year !== undefined) {
-        return db.collection("records").find({id: parseInt(id)}.toArray(function (err, result) {
-        }));
+        return db.collection("records").findOne({id: parseInt(id), evaluationrecord:{year: parseInt(year)}});
+    } else if (year === undefined) {
+        return db.collection("records").find({id: parseInt(id)}).toArray();
     }
 }
 
