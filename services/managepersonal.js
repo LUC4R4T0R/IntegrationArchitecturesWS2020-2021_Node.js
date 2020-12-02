@@ -57,7 +57,7 @@ exports.readEvaluationRecord = async function (db, id, year) {
 
 //delete EvaluationRecord
 exports.deleteEvaluationRecord = async function (db, year, id) {
-    await db.collection("salesman").deleteOne({id: id, year: evaluationrecord.year}, function (err, obj) {
+    await db.collection("salesman").deleteOne({id: id, evaluationrecord:{year: parseInt(year)}}, function (err, obj) {
         if (err) throw err;
         console.log("1 Evaluationrecord deleted");
     });
@@ -66,41 +66,100 @@ exports.deleteEvaluationRecord = async function (db, year, id) {
 
 //create EvaluationRecordentry
 exports.createEvaluationRecordentry = async function (db, id, year, evaluationrecordentry) {
+    //get the record
     var evaluationrecord;
-    await db.collection("records").findOne({id: id, year: evaluationrecord.year}, function (err, result) {
+    await db.collection("records").findOne({id: id, evaluationrecord:{year: parseInt(year)}}, function (err, result) {
         if (err) throw err;
         console.log(result);
         evaluationrecord = result;
     });
 
-    evaluationrecord.entries[evaluationrecord.entries.length] = evaluationrecordentry;
+    //add the entry and update the record
+    var list = evaluationrecord.entries;
+    list.push(evaluationrecordentry);
+    var newvalues = {$set: {evaluationrecord:{entries:list}}};
+    await db.collection("records").updateOne({id: id, evaluationrecord:{year: parseInt(year)}}, newvalues, function (err, res) {
+        if (err) throw err;
+        console.log("1 entry created");
+    });
 }
 
 //read EvaluationRecordentry
 exports.readEvaluationRecordentry = async function (db, year, id, name) {
-
+    if (name === undefined){
+        //get the record entries
+        await db.collection("records").findOne({id: id, evaluationrecord:{year: parseInt(year)}}, function (err, result) {
+            if (err) throw err;
+            console.log(result);
+            return result.entries;
+        });
+    } else if(name !== undefined){
+        //get the record
+        var evaluationrecord;
+        await db.collection("records").findOne({id: id, evaluationrecord:{year: parseInt(year)}}, function (err, result) {
+            if (err) throw err;
+            console.log(result);
+            evaluationrecord = result;
+        });
+        //get the specific entry
+        var entries = evaluationrecord.entries;
+        for (let i = 0; i < entries.length; i++) {
+            if (entries[i].name == name) {
+                return entries[i];
+            }
+        }
+    }
 }
 
 //update EvaluationRecordentry
 exports.updateEvaluationRecordentry = async function (db, evaluationrecordentry, id, year) {
+    //get the record
     var evaluationrecord;
-    await db.collection("records").findOne({id: id, year: evaluationrecord.year}, function (err, result) {
+    await db.collection("records").findOne({id: id, evaluationrecord:{year: parseInt(year)}}, function (err, result) {
         if (err) throw err;
         console.log(result);
         evaluationrecord = result;
     });
 
+    //get the entries and change the right one
     var entries = evaluationrecord.entries;
     for (let i = 0; i < entries.length; i++) {
-        if (entries[i].name == name) {
+        if (entries[i].name == evaluationrecordentry.name) {
             entries[i] = evaluationrecordentry;
         }
     }
 
-
+    //update records with new entries
+    var newvalues = {$set: {evaluationrecord:{entries:entries}}};
+    await db.collection("records").updateOne({id: id, evaluationrecord:{year: parseInt(year)}}, newvalues, function (err, res) {
+        if (err) throw err;
+        console.log("1 entry updated");
+    });
 }
 
 //delete EvaluationRecordentry
 exports.deleteEvaluationRecordentry = async function (db, year, id) {
+    //get the record
+    var evaluationrecord;
+    await db.collection("records").findOne({id: id, evaluationrecord:{year: parseInt(year)}}, function (err, result) {
+        if (err) throw err;
+        console.log(result);
+        evaluationrecord = result;
+    });
 
+    //get all entries except the one to delete
+    var entries = evaluationrecord.entries;
+    var newentries = [];
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].name != name) {
+            newentries.push(entries[i]);
+        }
+    }
+
+    //update records with new entries
+    var newvalues = {$set: {evaluationrecord:{entries:newentries}}};
+    await db.collection("records").updateOne({id: id, evaluationrecord:{year: parseInt(year)}}, newvalues, function (err, res) {
+        if (err) throw err;
+        console.log("1 entry deleted");
+    });
 }
