@@ -205,7 +205,7 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationre
         let list = evaluationRecord1.EvaluationRecord.entries;
 
         for (let i = 0; i < list.length; i++) {
-            if (list[i].name == evaluationrecordentry.name) {
+            if (list[i].name === evaluationrecordentry.name) {
                 list[i] = evaluationrecordentry;
             }
         }
@@ -226,15 +226,15 @@ exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
             let list = evaluationRecord1.EvaluationRecord.entries;
 
             //filter out the entry to delete it
-            var newentries = [];
+            let newentries = [];
             for (let i = 0; i < list.length; i++) {
-                if (list[i].name != name) {
+                if (list[i].name !== name) {
                     newentries.push(list[i]);
                 }
             }
 
             //update records with new entries
-            var newvalues = {$set: {"evaluationRecord.year": parseInt(year), "EvaluationRecord.entries": newentries}};
+            let newvalues = {$set: {"evaluationRecord.year": parseInt(year), "EvaluationRecord.entries": newentries}};
             await db.collection("records").updateOne({id: parseInt(id), "EvaluationRecord.year": parseInt(year)}, newvalues);
         }
     };
