@@ -1,10 +1,10 @@
 var Salesman = require('../models/Salesman');
-var managepersonal = require('../services/managepersonal');
+var salesman_service = require('../services/Salesman');
 
 exports.list = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readSalesman(db);
+        var result = await salesman_service.readSalesman(db);
         res.send(result);
     })();
 }
@@ -12,27 +12,27 @@ exports.list = function(req, res){
 exports.create = function(req, res){
     var db = req.app.get('db');
     let salesman = req.body;
-    managepersonal.createSalesman(db, salesman);
+    salesman_service.createSalesman(db, salesman);
     res.send('success');
 }
 
 exports.update = function(req, res){
     var db = req.app.get('db');
     let salesman = req.body;
-    managepersonal.updateSalesman(db, salesman);
+    salesman_service.updateSalesman(db, salesman);
     res.send('success');
 }
 
 exports.find = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readSalesman(db, req.params.id);
+        var result = await salesman_service.readSalesman(db, req.params.id);
         res.send(result);
     })();
 }
 
 exports.remove = function(req, res){
     var db = req.app.get('db');
-    managepersonal.deleteSalesman(db, req.params.id);
+    salesman_service.deleteSalesman(db, req.params.id);
     res.send('success');
 }

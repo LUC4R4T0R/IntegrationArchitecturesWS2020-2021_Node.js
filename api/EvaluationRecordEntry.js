@@ -1,10 +1,10 @@
 var EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
-var managepersonal = require('../services/managepersonal');
+var evaluationRecordEntry_service = require('../services/EvaluationRecordEntry');
 
 exports.list = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readEvaluationRecordEntry(db, req.params.id, req.params.year);
+        var result = await evaluationRecordEntry_service.readEvaluationRecordEntry(db, req.params.id, req.params.year);
         res.send(result);
     })();
 }
@@ -12,7 +12,7 @@ exports.list = function(req, res){
 exports.create = function(req, res){
     var db = req.app.get('db');
     let evaluationRecordEntry = req.body;
-    managepersonal.createEvaluationRecordEntry(db, req.params.id, req.params.year, evaluationRecordEntry).then(() => {
+    evaluationRecordEntry_service.createEvaluationRecordEntry(db, req.params.id, req.params.year, evaluationRecordEntry).then(() => {
         res.send('success');
     });
 }
@@ -20,21 +20,21 @@ exports.create = function(req, res){
 exports.update = function(req, res){
     var db = req.app.get('db');
     let evaluationRecordEntry = req.body;
-    managepersonal.updateEvaluationRecordEntry(db, req.params.id, req.params.year, evaluationRecordEntry);
+    evaluationRecordEntry_service.updateEvaluationRecordEntry(db, req.params.id, req.params.year, evaluationRecordEntry);
     res.send('success');
 }
 
 exports.find = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
+        var result = await evaluationRecordEntry_service.readEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
         res.send(result);
     })();
 }
 
 exports.remove = function(req, res){
     var db = req.app.get('db');
-    managepersonal.deleteEvaluationRecordEntry(db, req.params.id, req.params.year,req.params.name).then(() => {
+    evaluationRecordEntry_service.deleteEvaluationRecordEntry(db, req.params.id, req.params.year,req.params.name).then(() => {
         res.send('success');
     });
 }
