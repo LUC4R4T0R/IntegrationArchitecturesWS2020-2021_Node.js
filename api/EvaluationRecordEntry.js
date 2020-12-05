@@ -27,14 +27,14 @@ exports.update = function(req, res){
 exports.find = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readEvaluationRecordentry(db, req.params.year, req.params.id, req.params.name);
+        var result = await managepersonal.readEvaluationRecordentry(db, req.params.id, req.params.year, req.params.name);
         res.send(result);
     })();
 }
 
 exports.remove = function(req, res){
     var db = req.app.get('db');
-    managepersonal.deleteEvaluationRecordentry(db, req.params.year, req.params.id).then(() => {
+    managepersonal.deleteEvaluationRecordentry(db, req.params.id, req.params.year).then(() => {
         res.send('success');
     });
 }
