@@ -10,7 +10,7 @@ exports.createSalesman = async function (db, salesman) {
             console.log("Element already exists");
         }
     }
-}
+};
 
 //read Salesman
 exports.readSalesman = async function (db, id, query) {
@@ -45,7 +45,7 @@ exports.readSalesman = async function (db, id, query) {
             console.log("To much params");
         }
     }
-}
+};
 
 //update Salesman
 exports.updateSalesman = async function (db, salesman) {
@@ -61,7 +61,7 @@ exports.updateSalesman = async function (db, salesman) {
         }
     }
 
-}
+};
 
 //delete Salesman
 exports.deleteSalesman = async function (db, id) {
@@ -75,21 +75,21 @@ exports.deleteSalesman = async function (db, id) {
             console.log("Element not found");
         }
     }
-}
+};
 
 //create EvaluationRecord
 exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
     if (db === undefined || id === undefined || evaluationRecord === undefined) {
         console.log("Expected Element");
     } else {
-        let test = await db.collection("records").find({id: parseInt(id), evaluationRecord: {year: parseInt(evaluationRecord.year)}}).toArray();
+        let test = await db.collection("records").find({id: parseInt(id), "EvaluationRecord.year": parseInt(evaluationRecord.year)}).toArray();
         if (test.length === 0) {
-            await db.collection("records").insertOne({id: parseInt(id),evaluationRecord: evaluationRecord});
+            await db.collection("records").insertOne({id: parseInt(id),EvaluationRecord: evaluationRecord});
         } else {
             console.log("Element already exists");
         }
     }
-}
+};
 
 //read EvaluationRecord
 exports.readEvaluationRecord = async function (db, id, year) {
@@ -104,13 +104,13 @@ exports.readEvaluationRecord = async function (db, id, year) {
                 //return all records
                 return test;
             }
-        } else if (year !== undefined && id !== undefined) {
-            let test = await db.collection("records").find({id: parseInt(id), evaluationRecord: {year: parseInt(year)}}).toArray();
-            if (test.length === 0) {
+        } else if (id !== undefined && year !== undefined ) {
+            let test1 = await db.collection("records").find({id: parseInt(id), "EvaluationRecord.year": parseInt(year)}).toArray();
+            if (test1.length === 0) {
                 console.log("Element(s) not found");
             } else {
                 //return the record of the given salesman in the given year
-                return test[0];
+                return test1[0];
             }
         } else if (year === undefined) {
             let test = await db.collection("records").find({id: parseInt(id)}).toArray();
@@ -124,136 +124,117 @@ exports.readEvaluationRecord = async function (db, id, year) {
             console.log("To much params");
         }
     }
-}
+};
 
 //delete EvaluationRecord
 exports.deleteEvaluationRecord = async function (db, id, year) {
     if (db === undefined || id === undefined || year === undefined) {
         console.log("Expected Element");
     } else {
-        let test = await db.collection("records").find({id: parseInt(id), evaluationRecord: {year: parseInt(year)}}).toArray();
+        let test = await db.collection("records").find({id: parseInt(id), "EvaluationRecord.year": parseInt(year)}).toArray();
         if (test.length !== 0) {
-            await db.collection("records").deleteOne({id: parseInt(id), evaluationRecord: {year: parseInt(year)}});
+            await db.collection("records").deleteOne({id: parseInt(id), "EvaluationRecord.year": parseInt(year)});
         } else {
             console.log("Element not found");
         }
     }
 
-}
-
+};
 
 //create EvaluationRecordentry
-exports.createEvaluationRecordentry = async function (db, id, year, evaluationrecordentry) {
-    //get the record
-    let evaluationRecord = await db.collection("records").find({id: parseInt(id), evaluationRecord: {year: parseInt(year)}}).toArray();
+exports.createEvaluationRecordEntry = async function (db, id, year, evaluationrecordentry) {
+    if (db === undefined || id === undefined || year === undefined || evaluationrecordentry === undefined){
+        console.log("Expected Element");
+    } else {
+        //get the record-entries
+        let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+        let list = evaluationRecord1.EvaluationRecord.entries;
 
-    //add the entry and update the record
-    let list = evaluationRecord[0].entries;
-    list.push(evaluationrecordentry);
-    let newvalues = {$set: {evaluationRecord: {entries: list}}};
-    await db.collection("records").updateOne({
-        id: parseInt(id),
-        evaluationRecord: {year: parseInt(year)}
-    }, newvalues, function (err, res) {
-        if (err) throw err;
-        console.log("1 entry created");
-    });
-}
+        //check if name already exists
+        let name_exists = false;
+        if (list === undefined){
+            list = [];
+        } else {
+            for(let i = 0; i < list.length; i++){
+                if(evaluationrecordentry.name === list[i].name){
+                    name_exists = true;
+                }
+            }
+        }
+
+        if (name_exists){
+            console.log("Element already exists");
+        } else {
+            //add the entry and update the record
+            list.push(evaluationrecordentry);
+            let newvalues = {$set: {"evaluationRecord.year": parseInt(year), "EvaluationRecord.entries": list}};
+            await db.collection("records").updateOne({id: parseInt(id), "EvaluationRecord.year": parseInt(year)}, newvalues);
+        }
+    }
+};
 
 //read EvaluationRecordentry
-exports.readEvaluationRecordentry = async function (db, id, year, name) {
-    if (name === undefined) {
-        //get the record entries
-        await db.collection("records").findOne({
-            id: parseInt(id),
-            evaluationrecord: {year: parseInt(year)}
-        }, function (err, result) {
-            if (err) throw err;
-            console.log(result);
-            return result.entries;
-        });
-    } else if (name !== undefined) {
-        //get the record
-        var evaluationrecord;
-        await db.collection("records").findOne({
-            id: parseInt(id),
-            evaluationrecord: {year: parseInt(year)}
-        }, function (err, result) {
-            if (err) throw err;
-            console.log(result);
-            evaluationrecord = result;
-        });
-        //get the specific entry
-        var entries = evaluationrecord.entries;
-        for (let i = 0; i < entries.length; i++) {
-            if (entries[i].name == name) {
-                return entries[i];
+exports.readEvaluationRecordEntry = async function (db, id, year, name) {
+    if (db === undefined || id === undefined || year === undefined){
+        console.log("Expected Element");
+    } else {
+        if (name === undefined) {
+            //get all entries of one id-year combination
+            let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+            return evaluationRecord1.EvaluationRecord.entries;
+        } else {
+            //get one entry of one id-year combination
+            let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+            let list = evaluationRecord1.EvaluationRecord.entries;
+            for(let i = 0; i < list.length; i++){
+                if(name === list[i].name){
+                   return list[i];
+                }
             }
         }
     }
-}
+};
 
 //update EvaluationRecordentry
-exports.updateEvaluationRecordentry = async function (db, id, year, evaluationrecordentry) {
-    //get the record
-    var evaluationrecord;
-    await db.collection("records").findOne({
-        id: parseInt(id),
-        evaluationrecord: {year: parseInt(year)}
-    }, function (err, result) {
-        if (err) throw err;
-        console.log(result);
-        evaluationrecord = result;
-    });
+exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationrecordentry) {
+    if (db === undefined || id === undefined || year === undefined || evaluationrecordentry === undefined){
+        console.log("Expected Element");
+    } else {
+        //get the record-entries
+        let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+        let list = evaluationRecord1.EvaluationRecord.entries;
 
-    //get the entries and change the right one
-    var entries = evaluationrecord.entries;
-    for (let i = 0; i < entries.length; i++) {
-        if (entries[i].name == evaluationrecordentry.name) {
-            entries[i] = evaluationrecordentry;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].name == evaluationrecordentry.name) {
+                list[i] = evaluationrecordentry;
+            }
         }
-    }
 
-    //update records with new entries
-    var newvalues = {$set: {evaluationrecord: {entries: entries}}};
-    await db.collection("records").updateOne({
-        id: parseInt(id),
-        evaluationrecord: {year: parseInt(year)}
-    }, newvalues, function (err, res) {
-        if (err) throw err;
-        console.log("1 entry updated");
-    });
-}
+        //update records with new entries
+        var newvalues = {$set: {"evaluationRecord.year": parseInt(year),"EvaluationRecord.entries": list}};
+        await db.collection("records").updateOne({id: parseInt(id),"EvaluationRecord.year": parseInt(year)}, newvalues);
+    }
+};
 
 //delete EvaluationRecordentry
-exports.deleteEvaluationRecordentry = async function (db, id, year) {
-    //get the record
-    var evaluationrecord;
-    await db.collection("records").findOne({
-        id: parseInt(id),
-        evaluationrecord: {year: parseInt(year)}
-    }, function (err, result) {
-        if (err) throw err;
-        console.log(result);
-        evaluationrecord = result;
-    });
+exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
+        if (db === undefined || id === undefined || year === undefined) {
+            console.log("Expected Element");
+        } else {
+            //get the record-entries
+            let evaluationRecord1 = await this.readEvaluationRecord(db, id, year);
+            let list = evaluationRecord1.EvaluationRecord.entries;
 
-    //get all entries except the one to delete
-    var entries = evaluationrecord.entries;
-    var newentries = [];
-    for (let i = 0; i < entries.length; i++) {
-        if (entries[i].name != name) {
-            newentries.push(entries[i]);
+            //filter out the entry to delete it
+            var newentries = [];
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].name != name) {
+                    newentries.push(list[i]);
+                }
+            }
+
+            //update records with new entries
+            var newvalues = {$set: {"evaluationRecord.year": parseInt(year), "EvaluationRecord.entries": newentries}};
+            await db.collection("records").updateOne({id: parseInt(id), "EvaluationRecord.year": parseInt(year)}, newvalues);
         }
-    }
-
-    //update records with new entries
-    var newvalues = {$set: {evaluationrecord: {entries: newentries}}};
-    await db.collection("records").updateOne({
-        id: parseInt(id),
-        evaluationrecord: {year: parseInt(year)}
-    }, newvalues, function (err, res) {
-        if (err) throw err;
-        console.log("1 entry deleted");
-    });
-}
+    };

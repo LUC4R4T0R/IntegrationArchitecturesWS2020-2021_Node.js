@@ -4,7 +4,7 @@ var managepersonal = require('../services/managepersonal');
 exports.list = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readEvaluationRecordentry(db, req.params.id, req.params.year);
+        var result = await managepersonal.readEvaluationRecordEntry(db, req.params.id, req.params.year);
         res.send(result);
     })();
 }
@@ -12,7 +12,7 @@ exports.list = function(req, res){
 exports.create = function(req, res){
     var db = req.app.get('db');
     let evaluationRecordEntry = req.body;
-    managepersonal.createEvaluationRecordentry(db, req.params.id, req.params.year, evaluationRecordEntry).then(() => {
+    managepersonal.createEvaluationRecordEntry(db, req.params.id, req.params.year, evaluationRecordEntry).then(() => {
         res.send('success');
     });
 }
@@ -20,21 +20,21 @@ exports.create = function(req, res){
 exports.update = function(req, res){
     var db = req.app.get('db');
     let evaluationRecordEntry = req.body;
-    managepersonal.updateEvaluationRecordentry(db, evaluationRecordEntry, req.params.id, req.params.year);
+    managepersonal.updateEvaluationRecordEntry(db, req.params.id, req.params.year, evaluationRecordEntry);
     res.send('success');
 }
 
 exports.find = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readEvaluationRecordentry(db, req.params.id, req.params.year, req.params.name);
+        var result = await managepersonal.readEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
         res.send(result);
     })();
 }
 
 exports.remove = function(req, res){
     var db = req.app.get('db');
-    managepersonal.deleteEvaluationRecordentry(db, req.params.id, req.params.year).then(() => {
+    managepersonal.deleteEvaluationRecordEntry(db, req.params.id, req.params.year,req.params.name).then(() => {
         res.send('success');
     });
 }
