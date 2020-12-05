@@ -63,11 +63,11 @@ app.delete('/salesman/:id/evaluationrecord/:year', EvaluationRecord.remove);
 
 // EvaluationRecordEntry
 
-app.get('/salesman/:id/evaluationrecord/:name/entry', EvaluationRecordEntry.list);
-app.post('/salesman/:id/evaluationrecord/:name/entry', EvaluationRecordEntry.create);
-app.put('/salesman/:id/evaluationrecord/:name/entry', EvaluationRecordEntry.update);
-app.get('/salesman/:id/evaluationrecord/:name/entry/:name', EvaluationRecordEntry.find);
-app.delete('/salesman/:id/evaluationrecord/:name/entry/:name', EvaluationRecordEntry.remove);
+app.get('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.list);
+app.post('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.create);
+app.put('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.update);
+app.get('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.find);
+app.delete('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.remove);
 
 /*
 app.get('/test', (req,res) => {
