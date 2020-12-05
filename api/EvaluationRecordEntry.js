@@ -4,7 +4,7 @@ var managepersonal = require('../services/managepersonal');
 exports.list = function(req, res){
     var db = req.app.get('db');
     (async () => {
-        var result = await managepersonal.readEvaluationRecordentry(db, req.params.year, req.params.id);
+        var result = await managepersonal.readEvaluationRecordentry(db, req.params.id, req.params.year);
         res.send(result);
     })();
 }
