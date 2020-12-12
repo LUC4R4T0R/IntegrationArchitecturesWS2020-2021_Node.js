@@ -3,10 +3,11 @@ const FormData = require('form-data');
 
 class OrangeHRMConnector{
 
-    constructor(url, username, password) {
+    constructor(url, username, password, smUnit) {
         this.url = url;
         this.username = username;
         this.password = password;
+        this.smUnit = smUnit;
 
         this.getToken();
     }
@@ -39,18 +40,18 @@ class OrangeHRMConnector{
      * @param id company-wide employee-Id
      * @returns {Promise<*>}
      */
-    async resolveEmployeeId(id){
-        try{
+    async resolveEmployeeId(id) {
+        try {
             var request = await axios.get(
-                this.url+'/api/v1/employee/search?code=' + id,
+                this.url + '/api/v1/employee/search?code=' + id,
                 {
-                    headers:{
+                    headers: {
                         Authorization: 'Bearer ' + this.token
                     }
                 }
             );
             return request.data.data[0].employeeId;
-        } catch (error){
+        } catch (error) {
             console.error('ERROR OrangeHRM | User with given ID was not found: ' + error);
         }
     }
@@ -74,6 +75,30 @@ class OrangeHRMConnector{
             return request.data.data;
         } catch (error){
             console.error('ERROR OrangeHRM | User with given ID was not found: ' + error);
+        }
+    }
+
+    /**
+     * returns all salesmen if the ID of the salesmen unit was specified
+     * @returns {Promise<*>}
+     */
+    async getSalesmen(){
+        if(this.smUnit !== undefined){
+            try{
+                var request = await axios.get(
+                    this.url+'/api/v1/employee/search?unit=' + this.smUnit,
+                    {
+                        headers:{
+                            Authorization: 'Bearer ' + this.token
+                        }
+                    }
+                );
+                return request.data.data;
+            } catch (error){
+                console.error('ERROR OrangeHRM | Unable to find salesmen: ' + error);
+            }
+        }else{
+            console.error('ERROR OrangeHRM | No unit-ID for salesmen specified!');
         }
     }
 

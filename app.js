@@ -16,7 +16,7 @@ const config = JSON.parse(rawConfig);
 
 //load and start API-connectors
 const OrangeHRMConnector = require('./connectors/OrangeHRM');
-const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_username"], config["OrangeHRM_password"]);
+const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_username"], config["OrangeHRM_password"], 2);
 const OpenCRXConnector = require('./connectors/OpenCRX');
 const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
 
@@ -80,7 +80,10 @@ app.delete('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordE
 
 /*
 app.get('/test', (req,res) => {
-   oHRM.addBonusSalary(8, 2021, 1000000);
+   //oHRM.addBonusSalary(8, 2021, 1000000);
+   (async function() {
+      res.send(await oHRM.getSalesmen());
+   })()
 });
 
 app.get('/testUser', (req, res) => {
