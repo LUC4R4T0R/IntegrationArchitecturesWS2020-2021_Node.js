@@ -19,7 +19,7 @@ exports.list = function(req, res){
 exports.find = function(req, res){
     let db = req.app.get('db');
         evaluationRecordEntry_service.readEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name)
-            .then(() => res.send(result))
+            .then(result => res.send(result))
             .catch(() => res.status(400).send("fail"));
 }
 

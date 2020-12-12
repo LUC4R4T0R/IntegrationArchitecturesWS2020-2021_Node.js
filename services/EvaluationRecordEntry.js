@@ -1,3 +1,5 @@
+let evaluationrecord_service = require('../services/EvaluationRecord');
+
 //create EvaluationRecordentry
 exports.createEvaluationRecordEntry = async function (db, id, year, evaluationrecordentry) {
     if (db === undefined || id === undefined || year === undefined || evaluationrecordentry === undefined){
@@ -5,7 +7,7 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationre
         throw new Error;
     } else {
         //get the record-entries
-        let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+        let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
         let list = evaluationRecord1.EvaluationRecord.entries;
 
         //check if name already exists
@@ -40,11 +42,11 @@ exports.readEvaluationRecordEntry = async function (db, id, year, name) {
     } else {
         if (name === undefined) {
             //get all entries of one id-year combination
-            let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+            let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
             return evaluationRecord1.EvaluationRecord.entries;
         } else {
             //get one entry of one id-year combination
-            let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+            let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
             let list = evaluationRecord1.EvaluationRecord.entries;
             for(let i = 0; i < list.length; i++){
                 if(name === list[i].name){
@@ -62,7 +64,7 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationre
         throw new Error;
     } else {
         //get the record-entries
-        let evaluationRecord1 = await this.readEvaluationRecord(db,id,year);
+        let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
         let list = evaluationRecord1.EvaluationRecord.entries;
 
         let worked = false;
@@ -90,7 +92,7 @@ exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
         throw new Error;
     } else {
         //get the record-entries
-        let evaluationRecord1 = await this.readEvaluationRecord(db, id, year);
+        let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
         let list = evaluationRecord1.EvaluationRecord.entries;
 
         let worked = false;
