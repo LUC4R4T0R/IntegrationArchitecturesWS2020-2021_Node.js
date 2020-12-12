@@ -5,6 +5,11 @@ app.use(bodyParser.json()); //adds support for json encoded bodies
 const fs = require('fs');
 const mongodb = require('mongodb');
 
+
+//swagger
+const swaggerUi = require('swagger-ui-express'),
+swaggerDocument = require('./swagger.json');
+
 //load config data
 const rawConfig = fs.readFileSync('./config.json');
 const config = JSON.parse(rawConfig);
@@ -22,7 +27,7 @@ const EvaluationRecordEntry = require('./api/EvaluationRecordEntry');
 
 //starting database-connection and local API
 const MongoClient = mongodb.MongoClient;
-var auth = "";
+let auth = "";
 if (config["MongoDB_username"] !== ""){
    auth = config["MongoDB_username"] + ":" + config["MongoDB_username"] + "@";
 }
@@ -32,6 +37,10 @@ MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config
    }
 
    app.set('db', database.db(config["MongoDB_database"]));
+
+
+   //swagger
+   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
    app.listen(config["API_port"], () => {
       console.log('Server started.');
