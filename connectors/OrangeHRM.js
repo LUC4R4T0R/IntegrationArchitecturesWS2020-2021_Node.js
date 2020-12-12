@@ -56,6 +56,28 @@ class OrangeHRMConnector{
     }
 
     /**
+     * gets the general information about an employee which is stored in orangeHRM
+     * @param id company-wide employee-Id
+     * @returns {Promise<*>}
+     */
+    async getEmployeeInfo(id){
+        var emp_id = await this.resolveEmployeeId(id);
+        try{
+            var request = await axios.get(
+                this.url+'/api/v1/employee/' + emp_id,
+                {
+                    headers:{
+                        Authorization: 'Bearer ' + this.token
+                    }
+                }
+            );
+            return request.data.data;
+        } catch (error){
+            console.error('ERROR OrangeHRM | User with given ID was not found: ' + error);
+        }
+    }
+
+    /**
      * adds a bonus salary to the specified salesman
      * @param id Id of a salesman
      * @param year Year, in which the salary is / was payed
