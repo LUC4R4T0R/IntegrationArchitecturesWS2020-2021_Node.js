@@ -45,11 +45,11 @@ MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config
 
 // Salesman
 
+//app.post('/salesman', Salesman.create);
 app.get('/salesman', Salesman.list);
-app.post('/salesman', Salesman.create);
-app.put('/salesman', Salesman.update);
 app.get('/salesman/:id', Salesman.find);
-app.delete('/salesman/:id', Salesman.remove);
+//app.put('/salesman', Salesman.update);
+//app.delete('/salesman/:id', Salesman.remove);
 
 
 // EvaluationRecord
