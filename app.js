@@ -9,6 +9,7 @@ const mongodb = require('mongodb');
 //swagger
 const swaggerUi = require('swagger-ui-express'),
 swaggerDocument = require('./swagger.json');
+app.use('/swagger-api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //load config data
 const rawConfig = fs.readFileSync('./config.json');
@@ -37,10 +38,6 @@ MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config
    }
 
    app.set('db', database.db(config["MongoDB_database"]));
-
-
-   //swagger
-   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
    app.listen(config["API_port"], () => {
       console.log('Server started.');
