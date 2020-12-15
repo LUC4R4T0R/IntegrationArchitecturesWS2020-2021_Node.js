@@ -5,10 +5,10 @@ app.use(bodyParser.json()); //adds support for json encoded bodies
 const fs = require('fs');
 const mongodb = require('mongodb');
 
-
 //swagger
-const swaggerUi = require('swagger-ui-express'),
-swaggerDocument = require('./swagger.json');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('swagger.yml');
 app.use('/swagger-api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //load config data
