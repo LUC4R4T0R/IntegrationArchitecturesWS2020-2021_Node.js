@@ -1,10 +1,16 @@
 let evaluationrecord_service = require('../services/EvaluationRecord');
+let NoElementFoundError = require('../custom_errors/NoElementFoundError');
+let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
+let BadInputError = require('../custom_errors/BadInputError');
+let MissingElementError = require('../custom_errors/MissingElementError');
 
 //create EvaluationRecordentry
 exports.createEvaluationRecordEntry = async function (db, id, year, evaluationrecordentry) {
     if (db === undefined || id === undefined || year === undefined || evaluationrecordentry === undefined){
-        console.log("Expected Element");
-        throw new Error;
+        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
+    }
+    if (!id.match(/^[\d]+$/g)||!year.match(/^[\d]+$/g)||!evaluationrecordentry.name.match(/^[\w]+$/g)){
+        throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
     } else {
         //get the record-entries
         let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
@@ -23,8 +29,7 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationre
         }
 
         if (name_exists){
-            console.log("Element already exists");
-            throw new Error;
+            throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecordEntry that already exists!");
         } else {
             //add the entry and update the record
             list.push(evaluationrecordentry);
@@ -37,8 +42,10 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationre
 //read EvaluationRecordentry
 exports.readEvaluationRecordEntry = async function (db, id, year, name) {
     if (db === undefined || id === undefined || year === undefined){
-        console.log("Expected Element");
-        throw new Error;
+        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
+    }
+    if (!id.match(/^[\d]+$/g)||!year.match(/^[\d]+$/g)||!name.match(/^[\w]+$/g)){
+        throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
     } else {
         if (name === undefined) {
             //get all entries of one id-year combination
@@ -60,8 +67,10 @@ exports.readEvaluationRecordEntry = async function (db, id, year, name) {
 //update EvaluationRecordentry
 exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationrecordentry) {
     if (db === undefined || id === undefined || year === undefined || evaluationrecordentry === undefined){
-        console.log("Expected Element");
-        throw new Error;
+        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
+    }
+    if (!id.match(/^[\d]+$/g)||!year.match(/^[\d]+$/g)||!evaluationrecordentry.name.match(/^[\w]+$/g)){
+        throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
     } else {
         //get the record-entries
         let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
@@ -79,8 +88,7 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationre
             let newvalues = {$set: {"EvaluationRecord.year": parseInt(year),"EvaluationRecord.entries": list}};
             await db.collection("records").updateOne({id: parseInt(id),"EvaluationRecord.year": parseInt(year)}, newvalues);
         } else {
-            console.log("Element(s) not found");
-            throw new Error;
+            throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecordEntry (EvaluationRecord id: "+id+" ,year: "+year+") with the name: "+evaluationrecordentry.name+"!");
         }
     }
 };
@@ -88,8 +96,10 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationre
 //delete EvaluationRecordentry
 exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
     if (db === undefined || id === undefined || year === undefined) {
-        console.log("Expected Element");
-        throw new Error;
+        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
+    }
+    if (!id.match(/^[\d]+$/g)||!year.match(/^[\d]+$/g)||!name.match(/^[\w]+$/g)){
+        throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
     } else {
         //get the record-entries
         let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
@@ -111,8 +121,7 @@ exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
             let newvalues = {$set: {"EvaluationRecord.year": parseInt(year), "EvaluationRecord.entries": newentries}};
             await db.collection("records").updateOne({id: parseInt(id), "EvaluationRecord.year": parseInt(year)}, newvalues);
         } else {
-            console.log("Element(s) not found");
-            throw new Error;
+            throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecordEntry (EvaluationRecord id: "+id+" ,year: "+year+") with the name: "+name+"!");
         }
     }
 };
