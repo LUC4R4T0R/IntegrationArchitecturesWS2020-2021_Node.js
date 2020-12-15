@@ -1,5 +1,4 @@
 let NoElementFoundError = require('../custom_errors/NoElementFoundError');
-let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
 
@@ -24,9 +23,6 @@ let MissingElementError = require('../custom_errors/MissingElementError');
 exports.readSalesman = async function (db, id, query) {
     if (db === undefined) {
         throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
-    }
-    if (!salesman.id.match(/^[\d]+$/g)){
-        throw new BadInputError("BadInputError: The id must be a numbers (example input: 1234)!");
     } else {
         if (id === undefined && query === undefined) {
             let test = await db.collection("salesman").find({}).toArray();
@@ -45,6 +41,9 @@ exports.readSalesman = async function (db, id, query) {
                 return test;
             }
         } else if (query === undefined) {
+            if (!id.match(/^[\d]+$/g)){
+                throw new BadInputError("BadInputError: The id must be a numbers (example input: 1234)!");
+            }
             let test = await db.collection("salesman").find({id: parseInt(id)}).toArray();
             if (test.length === 0) {
                 throw new NoElementFoundError("NoElementFoundError: In the given Database exists no Salesman with the id: "+id+"!");

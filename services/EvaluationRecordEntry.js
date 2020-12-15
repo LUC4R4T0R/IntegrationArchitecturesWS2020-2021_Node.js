@@ -43,15 +43,18 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationre
 exports.readEvaluationRecordEntry = async function (db, id, year, name) {
     if (db === undefined || id === undefined || year === undefined){
         throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
-    }
-    if (!id.match(/^[\d]+$/g)||!year.match(/^[\d]+$/g)||!name.match(/^[\w]+$/g)){
-        throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
     } else {
         if (name === undefined) {
+            if (!id.match(/^[\d]+$/g)){
+                throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234)!");
+            }
             //get all entries of one id-year combination
             let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
             return evaluationRecord1.EvaluationRecord.entries;
         } else {
+            if (!id.match(/^[\d]+$/g)||!year.match(/^[\d]+$/g)||!name.match(/^[\w]+$/g)){
+                throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
+            }
             //get one entry of one id-year combination
             let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db,id,year);
             let list = evaluationRecord1.EvaluationRecord.entries;
