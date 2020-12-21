@@ -33,17 +33,17 @@ const rawConfig = fs.readFileSync('./config.json');
 const config = JSON.parse(rawConfig);
 
 //load and start API-connectors
-const OrangeHRMConnector = require('./connectors/OrangeHRM');
+const OrangeHRMConnector = require('./src/connectors/OrangeHRM');
 const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_username"], config["OrangeHRM_password"], 2);
-const OpenCRXConnector = require('./connectors/OpenCRX');
+const OpenCRXConnector = require('./src/connectors/OpenCRX');
 const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
 
 //loading local apis
-const Authentification = require('./api/Authentification');
-const User = require('./api/User');
-const Salesman = require('./api/Salesman');
-const EvaluationRecord = require('./api/EvaluationRecord');
-const EvaluationRecordEntry = require('./api/EvaluationRecordEntry');
+const Authentification = require('./src/api/Authentification');
+const User = require('./src/api/User');
+const Salesman = require('./src/api/Salesman');
+const EvaluationRecord = require('./src/api/EvaluationRecord');
+const EvaluationRecordEntry = require('./src/api/EvaluationRecordEntry');
 
 //starting database-connection and local API
 const MongoClient = mongodb.MongoClient;
