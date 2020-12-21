@@ -25,15 +25,7 @@ exports.readEvaluationRecord = async function (db, id, year) {
     if (db === undefined) {
         throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
     } else {
-        if (year === undefined && id === undefined) {
-            let test = await db.collection("records").find({}).toArray();
-            if (test.length === 0) {
-                throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord");
-            } else {
-                //return all records
-                return test;
-            }
-        } else if (id !== undefined && year !== undefined ) {
+        if (id !== undefined && year !== undefined ) {
             if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g)){
                 throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234)");
             }

@@ -43,14 +43,14 @@ paths:
     get:
       tags:
         - Salesman
-      operationId: getAllSalesman
-      summary: gets all Salesman
-      description: This method returns a list of all Salesman. In case of an Error there will be a message that
+      operationId: getAllSalesmen
+      summary: gets all Salesmen
+      description: This method returns a list of all Salesmen. In case of an Error there will be a message that
         describes what went wrong.
       deprecated: false
       responses:
         200:
-          $ref: '#/responses/SuccessReturn'
+          $ref: '#/responses/SuccessReturnSalesman'
         400:
           $ref: '#/responses/MissingElementError'
         404:
@@ -75,6 +75,7 @@ paths:
           $ref: '#/responses/BadInputError'
         404:
           $ref: '#/responses/NoSuchElementError'
+
   /salesman/{id}:
     #get a specific Salesman by id
     get:
@@ -89,7 +90,9 @@ paths:
         - $ref: '#/parameters/id'
       responses:
         200:
-          $ref: '#/definitions/Salesman'
+          description: Success
+          schema:
+            $ref: '#/definitions/Salesman'
         400:
           $ref: '#/responses/MissingElementError'
         510:
@@ -109,7 +112,7 @@ paths:
         - $ref: '#/parameters/id'
       responses:
         200:
-          $ref: '#/definitions/Salesman'
+          $ref: '#/responses/Success'
         400:
           $ref: '#/responses/MissingElementError'
         510:
@@ -118,6 +121,7 @@ paths:
           $ref: '#/responses/NoSuchElementError'
 
   /salesman/{id}/evaluationrecord:
+    #create an EvaluationRecords
     post:
       tags:
         - EvaluationRecord
@@ -137,6 +141,74 @@ paths:
           $ref: '#/responses/BadInputError'
         409:
           $ref: '#/responses/ElementDuplicateError'
+    #get all EvaluationRecords of an Salesman
+    get:
+      tags:
+        - EvaluationRecord
+      operationId: getAllEvaluationRecords
+      summary: gets all EvaluationRecords
+      description: This method returns a list of all EvaluationRecords. In case of an Error there will be a message that
+        describes what went wrong.
+      deprecated: false
+      responses:
+        200:
+          $ref: '#/responses/SuccessReturnEvaluationRecord'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+
+  /salesman/{id}/evaluationrecord/{year}:
+    #create an evaluationrecord
+    get:
+      tags:
+        - EvaluationRecord
+      operationId: getOneEvaluationRecordByIdAndYear
+      summary: gets one EvaluationRecord with the given id and year
+      description: This method returns a the EvaluationRecord with the given id and year. In case of an Error there will be a message
+        that describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/EvaluationRecord'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+    #delete a specific salesman by id
+    delete:
+      tags:
+        - EvaluationRecord
+      operationId: deleteOneEvaluationRecordByIdAndYear
+      summary: delete the EvaluationRecord with the given id and year
+      description: This method deltes the EvaluationRecord with the given id and year. In case of an Error there will be a message that
+        describes what went wrong.
+      deprecated: true
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/EvaluationRecord'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+
+
   #/salesman/{id}/evaluationrecord/{year}:
   #/salesman/{id}/evaluationrecord/{year}/entry:
   #/salesman/{id}/evaluationrecord/{year}/entry/{name}:
@@ -203,13 +275,27 @@ responses:
     description: Success
     schema:
       example: "success"
-  'SuccessReturn':
+  'SuccessReturnSalesman':
     description: Success
     schema:
       type: array
       minItems: 1
       items:
         $ref: '#/definitions/Salesman'
+  'SuccessReturnEvaluationRecord':
+    description: Success
+    schema:
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/definitions/EvaluationRecord'
+  'SuccessReturnEvaluationRecordEntry':
+    description: Success
+    schema:
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/definitions/EvaluationRecordEntry'
   'MissingElementError':
     description: MissingElementError
     schema:

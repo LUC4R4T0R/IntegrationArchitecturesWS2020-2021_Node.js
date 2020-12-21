@@ -33,6 +33,9 @@ exports.readSalesman = async function (db, id, queryString) {
                 return test;
             }
         } else if (id === undefined) {
+            if (!queryString.match(/^[\w]+$/g)){
+                throw new BadInputError("BadInputError: The queryString must be at least a character (example input 'a')!");
+            }
             let test1 = await db.collection("salesman").find({firstname: queryString}).toArray();
             let test2 = await db.collection("salesman").find({lastname: queryString}).toArray();
             if (test1.length === 0 && test2.length === 0) {
