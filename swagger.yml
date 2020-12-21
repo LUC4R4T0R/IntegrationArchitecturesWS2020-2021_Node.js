@@ -1,0 +1,255 @@
+#-----------------------------------------------------------------------------------------------------------------------
+#general
+swagger: "2.0"
+info:
+  title: "Integration Architecture"
+  description: "This API shows all our endpoints. By clicking on an endpoint you will get
+                a detailed description and the possibility to try out if and how the endpoints work."
+  version: 1.0.0
+host:
+  localhost:8080
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+#-----------------------------------------------------------------------------------------------------------------------
+#endpoint description
+paths:
+  /salesman:
+    #create a salesman
+    post:
+      tags:
+        - Salesman
+      operationId: createSalesman
+      summary: create a new Salesman
+      description: This Method creates a new Salesman. If this process workes, the server will return "success".
+        In every other case the server response will be an Error.
+      deprecated: true
+      parameters:
+        - $ref: '#/parameters/salesman'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        409:
+          $ref: '#/responses/ElementDuplicateError'
+    #get all Salesman
+    get:
+      tags:
+        - Salesman
+      operationId: getAllSalesman
+      summary: gets all Salesman
+      description: This method returns a list of all Salesman. In case of an Error there will be a message that
+        describes what went wrong.
+      deprecated: false
+      responses:
+        200:
+          $ref: '#/responses/SuccessReturn'
+        400:
+          $ref: '#/responses/MissingElementError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+    #update a salesman
+    put:
+      tags:
+        - Salesman
+      operationId: updateSalesman
+      summary: update a Salesman
+      description: This Method updates a Salesman. If this process workes, the server will return "success".
+        In every other case the server response will be an Error.
+      deprecated: true
+      parameters:
+        - $ref: '#/parameters/Salesman'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+  /salesman/{id}:
+    #get a specific Salesman by id
+    get:
+      tags:
+        - Salesman
+      operationId: getOneSalesmanById
+      summary: gets one Salesman with the given id
+      description: This method returns a the Salesman with the given id. In case of an Error there will be a message
+        that describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: '#/definitions/Salesman'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+    #delete a specific salesman by id
+    delete:
+      tags:
+        - Salesman
+      operationId: deleteOneSalesmanById
+      summary: delete the Salesman with the given id
+      description: This method deltes the Salesman with the given id. In case of an Error there will be a message that
+        describes what went wrong.
+      deprecated: true
+      parameters:
+        - $ref: '#/parameters/id'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+
+  /salesman/{id}/evaluationrecord:
+  /salesman/{id}/evaluationrecord/{year}:
+  /salesman/{id}/evaluationrecord/{year}/entry:
+  /salesman/{id}/evaluationrecord/{year}/entry/{name}:
+
+#-----------------------------------------------------------------------------------------------------------------------
+#model descriptions
+definitions:
+  #Salesman definition
+  Salesman:
+    type: object
+    properties:
+      _id:
+        type: string
+      id:
+        type: integer
+      firstname:
+        type: string
+      lastname:
+        type: string
+    required:
+      - id
+      - firstname
+      - lastname
+  #EvaluationRecord definition
+  EvaluationRecord:
+    type: object
+    properties:
+      _id:
+        type: string
+      id:
+        type: integer
+      EvaluationRecord:
+        type: object
+        properties:
+          year:
+            type: integer
+          entries:
+            type: array
+            items:
+              $ref: '#/definitions/EvaluationRecordEntry'
+        required:
+          - year
+    required:
+      - id
+  #EvaluationRecordEntry definition
+  EvaluationRecordEntry:
+    type: object
+    properties:
+      target:
+        type: integer
+      actual:
+        type: integer
+      name:
+        type: integer
+    required:
+      - target
+      - actual
+      - name
+
+#-----------------------------------------------------------------------------------------------------------------------
+#response descriptions
+responses:
+  'Success':
+    description: Success
+    schema:
+      example: "success"
+  'SuccessReturn':
+    description: Success
+    schema:
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/definitions/Salesman'
+
+  'MissingElementError':
+    description: MissingElementError
+    schema:
+      example: "MissingElementError: At least one of the required parameters is undefined!"
+  'BadInputError':
+    description: BadInputError
+    schema:
+      example: "BadInputError: At least one of the given params was not allowed!
+                Id's must be at least one integer long and strings at least one character long!"
+  'ElementDuplicateError':
+    description: ElementDuplicateError
+    schema:
+      example: "ElementDuplicateError: You tried to create an Object that already exists!"
+  'NoSuchELementError':
+    description: NoSuchELementError
+    schema:
+      example: "NoElementFoundError: In the given Database exists no Object related to your request!"
+
+#-----------------------------------------------------------------------------------------------------------------------
+#parameter descriptions
+parameters:
+  #path variable
+  id:
+    in: path
+    name: id
+    type: integer
+    required: true
+    description: The Id of the Salesman
+  year:
+    in: path
+    name: year
+    type: integer
+    required: true
+    description: The year of the Record
+  name:
+    in: path
+    name: name
+    type: string
+    required: true
+    description: The name of the entry
+
+  #body parameter
+  salesman:
+    name: Salesman
+    in: body
+    description: The Salesman that you want to post/put
+    required: true
+    schema:
+      $ref: '#/definitions/Salesman'
+  evaluationrecord:
+    name: EvaluationRecord
+    in: body
+    description: The EvaluationRecord that you want to post
+    required: true
+    schema:
+      $ref: '#/definitions/EvaluationRecord'
+  evaluationrecordentry:
+    name: EvaluationRecordEntry
+    in: body
+    description: The EvaluationRecordEntry that you want to post/put
+    required: true
+    schema:
+      $ref: '#/definitions/EvaluationRecordEntry'
