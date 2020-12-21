@@ -65,7 +65,7 @@ paths:
         In every other case the server response will be an Error.
       deprecated: true
       parameters:
-        - $ref: '#/parameters/Salesman'
+        - $ref: '#/parameters/salesman'
       responses:
         200:
           $ref: '#/responses/Success'
@@ -89,9 +89,9 @@ paths:
         - $ref: '#/parameters/id'
       responses:
         200:
-          description: success
-          schema:
-            $ref: '#/definitions/Salesman'
+          $ref: '#/definitions/Salesman'
+        400:
+          $ref: '#/responses/MissingElementError'
         510:
           $ref: '#/responses/BadInputError'
         404:
@@ -109,16 +109,37 @@ paths:
         - $ref: '#/parameters/id'
       responses:
         200:
-          $ref: '#/responses/Success'
+          $ref: '#/definitions/Salesman'
+        400:
+          $ref: '#/responses/MissingElementError'
         510:
           $ref: '#/responses/BadInputError'
         404:
           $ref: '#/responses/NoSuchElementError'
 
   /salesman/{id}/evaluationrecord:
-  /salesman/{id}/evaluationrecord/{year}:
-  /salesman/{id}/evaluationrecord/{year}/entry:
-  /salesman/{id}/evaluationrecord/{year}/entry/{name}:
+    post:
+      tags:
+        - EvaluationRecord
+      operationId: postOneEvaluationRecord
+      summary: create an EvaluationRecord for the Salesman with the given Id
+      description: This method creates an Evaluationrecord. In case of an Error there will be a message that
+        describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        409:
+          $ref: '#/responses/ElementDuplicateError'
+  #/salesman/{id}/evaluationrecord/{year}:
+  #/salesman/{id}/evaluationrecord/{year}/entry:
+  #/salesman/{id}/evaluationrecord/{year}/entry/{name}:
 
 #-----------------------------------------------------------------------------------------------------------------------
 #model descriptions
@@ -189,7 +210,6 @@ responses:
       minItems: 1
       items:
         $ref: '#/definitions/Salesman'
-
   'MissingElementError':
     description: MissingElementError
     schema:
@@ -203,8 +223,8 @@ responses:
     description: ElementDuplicateError
     schema:
       example: "ElementDuplicateError: You tried to create an Object that already exists!"
-  'NoSuchELementError':
-    description: NoSuchELementError
+  'NoSuchElementError':
+    description: NoSuchElementError
     schema:
       example: "NoElementFoundError: In the given Database exists no Object related to your request!"
 
@@ -238,7 +258,18 @@ parameters:
     description: The Salesman that you want to post/put
     required: true
     schema:
-      $ref: '#/definitions/Salesman'
+      type: object
+      properties:
+        id:
+          type: integer
+        firstname:
+          type: string
+        lastname:
+          type: string
+      required:
+        - id
+        - firstname
+        - lastname
   evaluationrecord:
     name: EvaluationRecord
     in: body
