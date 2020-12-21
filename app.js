@@ -1,9 +1,26 @@
 const express = require('express'); //load the express module
-const app = express();
 const bodyParser = require('body-parser');
-app.use(bodyParser.json()); //adds support for json encoded bodies
+const session = require('express-session');
 const fs = require('fs');
 const mongodb = require('mongodb');
+const crypto = require('crypto');
+const multer = require('multer');
+const upload = multer();
+
+const app = express();
+app.use(bodyParser.json()); //adds support for json encoded bodies
+app.use(bodyParser.urlencoded({extended: true})); //adds support url encoded bodies
+app.use(upload.array()); //adds support multipart/form-data bodies
+
+//session configuration
+app.use(session({
+   secret: crypto.randomBytes(32).toString('hex'),
+   resave: false,
+   saveUninitialized: false,
+   cookie: {
+      secure: false
+   }
+}));
 
 //swagger
 const swaggerUi = require('swagger-ui-express');
@@ -21,7 +38,9 @@ const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_u
 const OpenCRXConnector = require('./connectors/OpenCRX');
 const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
 
-//loading prototypes for common Objects
+//loading local apis
+const Authentification = require('./api/Authentification');
+const User = require('./api/User');
 const Salesman = require('./api/Salesman');
 const EvaluationRecord = require('./api/EvaluationRecord');
 const EvaluationRecordEntry = require('./api/EvaluationRecordEntry');
@@ -48,6 +67,22 @@ MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config
 /*
    Routes
  */
+
+
+// auth
+
+app.post('/auth', Authentification.authenticate);
+app.delete('/auth', Authentification.deAuthenticate);
+
+
+// Users
+
+//app.get('/user', User.list);
+app.post('/user', User.add);
+//app.get('/user/:username', User.get);
+//app.put('/user', User.update);
+//app.delete('/user/:username', User.remove);
+
 
 // Salesman
 
