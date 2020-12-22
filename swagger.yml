@@ -3,8 +3,8 @@
 swagger: "2.0"
 info:
   title: "Integration Architecture"
-  description: "This API shows all our endpoints. By clicking on an endpoint you will get
-                a detailed description and the possibility to try out if and how the endpoints work."
+  description: "This API shows all our endpoints. By clicking on an endpoint you will get a detailed description and
+    the possibility to try out if and how the endpoints work."
   version: 1.0.0
 host:
   localhost:8080
@@ -83,7 +83,7 @@ paths:
         - Salesman
       operationId: getOneSalesmanById
       summary: gets one Salesman with the given id
-      description: This method returns a the Salesman with the given id. In case of an Error there will be a message
+      description: This method returns the Salesman with the given id. In case of an Error there will be a message
         that describes what went wrong.
       deprecated: false
       parameters:
@@ -132,6 +132,7 @@ paths:
       deprecated: false
       parameters:
         - $ref: '#/parameters/id'
+        - $ref: '#/parameters/evaluationrecord'
       responses:
         200:
           $ref: '#/responses/Success'
@@ -161,7 +162,7 @@ paths:
           $ref: '#/responses/NoSuchElementError'
 
   /salesman/{id}/evaluationrecord/{year}:
-    #create an evaluationrecord
+    #get the EvaluationRecord of an Salesman of the given year
     get:
       tags:
         - EvaluationRecord
@@ -184,7 +185,7 @@ paths:
           $ref: '#/responses/BadInputError'
         404:
           $ref: '#/responses/NoSuchElementError'
-    #delete a specific salesman by id
+    #delete a specific EvaluationRecord by id and year
     delete:
       tags:
         - EvaluationRecord
@@ -192,15 +193,13 @@ paths:
       summary: delete the EvaluationRecord with the given id and year
       description: This method deltes the EvaluationRecord with the given id and year. In case of an Error there will be a message that
         describes what went wrong.
-      deprecated: true
+      deprecated: false
       parameters:
         - $ref: '#/parameters/id'
         - $ref: '#/parameters/year'
       responses:
         200:
-          description: Success
-          schema:
-            $ref: '#/definitions/EvaluationRecord'
+          $ref: '#/responses/Success'
         400:
           $ref: '#/responses/MissingElementError'
         510:
@@ -208,10 +207,122 @@ paths:
         404:
           $ref: '#/responses/NoSuchElementError'
 
+  /salesman/{id}/evaluationrecord/{year}/entry:
+    #create an EvaluationRecordEntry
+    post:
+      tags:
+        - EvaluationRecordEntry
+      operationId: postOneEvaluationRecordEntry
+      summary: create an EvaluationRecordEntry for the Salesman with the given Id and year
+      description: This method creates an EvaluationrecordEntry. In case of an Error there will be a message that
+        describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+        - $ref: '#/parameters/evaluationrecordentry'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+        409:
+          $ref: '#/responses/ElementDuplicateError'
+    #get all EvaluationRecordEntries of an EvaluationRecord of an Salesman
+    get:
+      tags:
+        - EvaluationRecordEntry
+      operationId: getAllEvaluationRecordEntries
+      summary: gets all EvaluationRecordEntries
+      description: This method returns a list of all EvaluationRecordEntries of one EvaluationRecord. In case of an
+        Error there will be a message that describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+      responses:
+        200:
+          $ref: '#/responses/SuccessReturnEvaluationRecordEntry'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+    #update an EvaluationRecordEntry
+    put:
+      tags:
+        - EvaluationRecordEntry
+      operationId: updateEvaluationRecordEntry
+      summary: update an EvaluationRecordEntry
+      description: This Method updates an EvaluationRecordEntry. If this process workes, the server will
+        return "success". In every other case the server response will be an Error.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+        - $ref: '#/parameters/evaluationrecordentry'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
 
-  #/salesman/{id}/evaluationrecord/{year}:
-  #/salesman/{id}/evaluationrecord/{year}/entry:
-  #/salesman/{id}/evaluationrecord/{year}/entry/{name}:
+  /salesman/{id}/evaluationrecord/{year}/entry/{name}:
+    #get the EvaluationRecordEntry of the EvaluationRecord of an Salesman of the given year with the given name
+    get:
+      tags:
+        - EvaluationRecordEntry
+      operationId: getOneEvaluationRecordEntryByIdAndYearAndName
+      summary: gets one EvaluationRecordEntry with the given id and year and name
+      description: This method returns a the EvaluationRecordEntry with the given id, year and name. In case of an
+        Error there will be a message that describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+        - $ref: '#/parameters/name'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/EvaluationRecordEntry'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
+    #delete an EvaluationRecordEntry
+    delete:
+      tags:
+        - EvaluationRecordEntry
+      operationId: deleteOneEvaluationRecordEntryByIdAndYearAnd name
+      summary: delete the EvaluationRecordEntry with the given id and year and name
+      description: This method deltes the EvaluationRecordEntry with the given id,year and name. In case of an Error
+        there will be a message that describes what went wrong.
+      deprecated: false
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/year'
+        - $ref: '#/parameters/name'
+      responses:
+        200:
+          $ref: '#/responses/Success'
+        400:
+          $ref: '#/responses/MissingElementError'
+        510:
+          $ref: '#/responses/BadInputError'
+        404:
+          $ref: '#/responses/NoSuchElementError'
 
 #-----------------------------------------------------------------------------------------------------------------------
 #model descriptions
@@ -262,7 +373,7 @@ definitions:
       actual:
         type: integer
       name:
-        type: integer
+        type: string
     required:
       - target
       - actual
@@ -362,7 +473,15 @@ parameters:
     description: The EvaluationRecord that you want to post
     required: true
     schema:
-      $ref: '#/definitions/EvaluationRecord'
+      properties:
+        year:
+          type: integer
+        entries:
+          type: array
+          items:
+            $ref: '#/definitions/EvaluationRecordEntry'
+      required:
+        - year
   evaluationrecordentry:
     name: EvaluationRecordEntry
     in: body
