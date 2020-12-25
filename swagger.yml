@@ -324,11 +324,6 @@ paths:
         404:
           $ref: '#/responses/NoSuchElementError'
 
-    #TODO OpenCRX Endpoints
-    #TODO OrangeHRM Endpoints
-    #TODO login Endpoints
-    #TODO User description etc.
-
 #-----------------------------------------------------------------------------------------------------------------------
 #model descriptions
 definitions:

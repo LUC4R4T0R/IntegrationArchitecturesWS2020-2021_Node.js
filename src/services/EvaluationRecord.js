@@ -22,7 +22,7 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
 
 //read EvaluationRecord
 exports.readEvaluationRecord = async function (db, id, year) {
-    if (db === undefined) {
+    if (db === undefined || id === undefined) {
         throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
     } else {
         if (id !== undefined && year !== undefined ) {
