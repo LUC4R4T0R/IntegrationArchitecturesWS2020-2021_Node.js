@@ -1,5 +1,5 @@
 class BadInputError extends Error {
-    constructor(message) {
+    constructor(message = 'BadInputError: That kind of input was not expected!') {
         super(message);
 
         this.name = 'BadInputError';

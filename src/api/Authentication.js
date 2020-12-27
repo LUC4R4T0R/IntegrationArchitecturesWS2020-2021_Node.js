@@ -8,7 +8,7 @@ exports.authenticate = function (req, res){
             auth_service.authenticate(req.session);
             res.send("success");
         })
-        .catch(() => res.status(400).send("fail"));
+        .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
 exports.deAuthenticate = function (req, res){
