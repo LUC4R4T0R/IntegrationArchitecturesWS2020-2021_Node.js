@@ -1,18 +1,20 @@
-const express = require('express'); //load the express module
+//express
+const express = require('express');
+const app = express();
+
+
+//support for different bodies
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const fs = require('fs');
-const mongodb = require('mongodb');
-const crypto = require('crypto');
 const multer = require('multer');
 const upload = multer();
-
-const app = express();
 app.use(bodyParser.json()); //adds support for json encoded bodies
 app.use(bodyParser.urlencoded({extended: true})); //adds support url encoded bodies
 app.use(upload.array()); //adds support multipart/form-data bodies
 
+
 //session configuration
+const session = require('express-session');
+const crypto = require('crypto');
 app.use(session({
    secret: crypto.randomBytes(32).toString('hex'),
    resave: false,
@@ -22,32 +24,39 @@ app.use(session({
    }
 }));
 
-//swagger
+
+//swagger-api
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('swagger.yml');
 app.use('/swagger-api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
 //load config data
+const fs = require('fs');
 const rawConfig = fs.readFileSync('./config.json');
 const config = JSON.parse(rawConfig);
 
+
 //load and start API-connectors
 const OrangeHRMConnector = require('./src/connectors/OrangeHRM');
-const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_username"], config["OrangeHRM_password"], 2);
+const oHRM = new OrangeHRMConnector(
+    config["OrangeHRM_URL"],
+    config["OrangeHRM_username"],
+    config["OrangeHRM_password"],
+    2);
 app.set('oHRM', oHRM);
+
 const OpenCRXConnector = require('./src/connectors/OpenCRX');
-const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
+const oCRX = new OpenCRXConnector(
+    config["OpenCRX_URL"],
+    config["OpenCRX_username"],
+    config["OpenCRX_password"]);
 app.set('oCRX', oCRX);
 
-//loading local apis
-const Authentication = require('./src/api/Authentication');
-const User = require('./src/api/User');
-const Salesman = require('./src/api/Salesman');
-const EvaluationRecord = require('./src/api/EvaluationRecord');
-const EvaluationRecordEntry = require('./src/api/EvaluationRecordEntry');
 
 //starting database-connection and local API
+const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 let auth = "";
 if (config["MongoDB_username"] !== ""){
@@ -66,81 +75,40 @@ MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config
 });
 
 
-/*
-   Routes
- */
-
+/*------------------------------------------Routes------------------------------------------------*/
+//loading local apis
+const Authentication = require('./src/api/Authentication');
+const User = require('./src/api/User');
+const Salesman = require('./src/api/Salesman');
+const EvaluationRecord = require('./src/api/EvaluationRecord');
+const EvaluationRecordEntry = require('./src/api/EvaluationRecordEntry');
 
 // auth
-
 app.post('/auth', Authentication.authenticate);
 app.delete('/auth', Authentication.deAuthenticate);
 
-
 // Users
-
-app.get('/user', User.list);
 app.post('/user', User.add);
+app.get('/user', User.list);
 app.get('/user/:username', User.get);
-//app.put('/user', User.update);
+app.put('/user', User.update);
 app.delete('/user/:username', User.remove);
 
-
 // Salesman
-
-//app.post('/salesman', Salesman.create);
+app.post('/salesman',Salesman.addBonus);
 app.get('/salesman', Salesman.list);
 app.get('/salesman/:id', Salesman.find);
-//app.put('/salesman', Salesman.update);
-//app.delete('/salesman/:id', Salesman.remove);
-
 
 // EvaluationRecord
-
-app.get('/salesman/:id/evaluationrecord', EvaluationRecord.list);
 app.post('/salesman/:id/evaluationrecord', EvaluationRecord.create);
-// app.put('/salesman/:id/evaluationrecord', EvaluationRecord.update);
+app.get('/salesman/:id/evaluationrecord', EvaluationRecord.list);
 app.get('/salesman/:id/evaluationrecord/:year', EvaluationRecord.find);
 app.delete('/salesman/:id/evaluationrecord/:year', EvaluationRecord.remove);
 
-
 // EvaluationRecordEntry
-
-app.get('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.list);
 app.post('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.create);
-app.put('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.update);
+app.get('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.list);
 app.get('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.find);
+app.put('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.update);
 app.delete('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.remove);
 
-/*
-app.get('/test', (req,res) => {
-   //oHRM.addBonusSalary(8, 2021, 1000000);
-   (async function() {
-      res.send(await oHRM.getSalesmen());
-   })()
-});
-
-app.get('/testUser', (req, res) => {
-   (async function(){
-      res.send(await oCRX.getUserByGovernmentId(91337));
-   })();
-});
-
-app.get('/testSalesOrder', (req, res) => {
-   (async function(){
-      res.send(await oCRX.getSalesOrderByAccountId('xri://@openmdx*org.opencrx.kernel.account1/provider/CRX/segment/Standard/account/9ENFSDRCBESBTH2MA4T2TYJFL'));
-   })();
-});
-
-app.get('/testContract', (req, res) => {
-   (async function(){
-      res.send(await oCRX.getContractPositions('9ENGNFGDLDQSPH2MA4T2TYJFL'));
-   })();
-});
-
-app.get('/testRating', (req, res) => {
-   (async function(){
-      res.send(await oCRX.getRating('9ENGNFGDLDQSPH2MA4T2TYJFL'));
-   })();
-});
- */
