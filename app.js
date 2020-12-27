@@ -79,11 +79,11 @@ app.delete('/auth', Authentication.deAuthenticate);
 
 // Users
 
-//app.get('/user', User.list);
+app.get('/user', User.list);
 app.post('/user', User.add);
-//app.get('/user/:username', User.get);
+app.get('/user/:username', User.get);
 //app.put('/user', User.update);
-//app.delete('/user/:username', User.remove);
+app.delete('/user/:username', User.remove);
 
 
 // Salesman
