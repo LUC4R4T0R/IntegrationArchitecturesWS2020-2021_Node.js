@@ -34,15 +34,15 @@ exports.listUsers = async function(db){
 
 exports.getUser = async function(db, username){
     let user = await db.collection('users').findOne({username: username});
-    if(user != null && user != undefined){
+    if(user != null && user !== undefined){
        return {displayname: user.displayname, username: user.username};
     }
     throw new NoElementFoundError('NoElementFoundError: The specified user was not found!');
 }
 
-/*exports.updateUser(db, user){
-
-}*/
+exports.updateUser = async function(db, user){
+    await db.collection('users').findOneAndUpdate({username: user.username},{"$set":{"displayname": user.displayname}});
+}
 
 exports.deleteUser = async function(db, username){
     await db.collection('users').deleteOne({username: username});
