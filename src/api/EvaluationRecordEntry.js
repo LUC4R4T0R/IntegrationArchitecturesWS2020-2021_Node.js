@@ -1,5 +1,6 @@
 let EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
 let evaluationRecordEntry_service = require('../services/EvaluationRecordEntry');
+let auth_service = require('../services/Authentication');
 
 exports.create = function(req, res){
     try{
