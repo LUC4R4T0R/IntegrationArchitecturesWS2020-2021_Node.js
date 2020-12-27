@@ -1,5 +1,6 @@
 const axios = require('axios');
 const FormData = require('form-data');
+const NoElementFoundError = require("../custom_errors/NoElementFoundError");
 
 class OrangeHRMConnector{
 
@@ -18,7 +19,7 @@ class OrangeHRMConnector{
      */
     async getToken(){
         try{
-            var request = await axios.post(
+            let request = await axios.post(
                 this.url+'/oauth/issueToken',
                 {
                     'client_id':'api_oauth_id',
@@ -42,7 +43,7 @@ class OrangeHRMConnector{
      */
     async resolveEmployeeId(id) {
         try {
-            var request = await axios.get(
+            let request = await axios.get(
                 this.url + '/api/v1/employee/search?code=' + id,
                 {
                     headers: {
@@ -52,7 +53,7 @@ class OrangeHRMConnector{
             );
             return request.data.data[0].employeeId;
         } catch (error) {
-            console.error('ERROR OrangeHRM | User with given ID was not found: ' + error);
+            throw new NoElementFoundError('ERROR OrangeHRM | User with given ID was not found: ' + error);
         }
     }
 
@@ -62,9 +63,9 @@ class OrangeHRMConnector{
      * @returns {Promise<*>}
      */
     async getEmployeeInfo(id){
-        var emp_id = await this.resolveEmployeeId(id);
+        let emp_id = await this.resolveEmployeeId(id);
         try{
-            var request = await axios.get(
+            let request = await axios.get(
                 this.url+'/api/v1/employee/' + emp_id,
                 {
                     headers:{
@@ -74,7 +75,7 @@ class OrangeHRMConnector{
             );
             return request.data.data;
         } catch (error){
-            console.error('ERROR OrangeHRM | User with given ID was not found: ' + error);
+            throw new NoElementFoundError('ERROR OrangeHRM | User with given ID was not found: ' + error);
         }
     }
 
@@ -85,7 +86,7 @@ class OrangeHRMConnector{
     async getSalesmen(){
         if(this.smUnit !== undefined){
             try{
-                var request = await axios.get(
+                let request = await axios.get(
                     this.url+'/api/v1/employee/search?unit=' + this.smUnit,
                     {
                         headers:{
@@ -95,10 +96,10 @@ class OrangeHRMConnector{
                 );
                 return request.data.data;
             } catch (error){
-                console.error('ERROR OrangeHRM | Unable to find salesmen: ' + error);
+                throw new NoElementFoundError('ERROR OrangeHRM | Unable to find salesmen: ' + error);
             }
         }else{
-            console.error('ERROR OrangeHRM | No unit-ID for salesmen specified!');
+            throw new NoElementFoundError('ERROR OrangeHRM | No unit-ID for salesmen specified!');
         }
     }
 
@@ -110,13 +111,13 @@ class OrangeHRMConnector{
      * @returns {Promise<void>}
      */
     async addBonusSalary(id, year, amount){
-        var formData = new FormData();
+        let formData = new FormData();
         formData.append('year', year);
         formData.append('value', amount);
 
         try{
-            var emp_id = await this.resolveEmployeeId(id);
-            var request = await axios.post(
+            let emp_id = await this.resolveEmployeeId(id);
+            let request = await axios.post(
                 this.url+'/api/v1/employee/' + emp_id + '/bonussalary',
                 formData,
                 {
@@ -128,7 +129,7 @@ class OrangeHRMConnector{
             );
             console.log('OrangeHRM | bonus salary added');
         } catch (error){
-            console.error('ERROR OrangeHRM | adding bonus salary failed: ' + error);
+            throw new Error('ERROR OrangeHRM | adding bonus salary failed: ' + error);
         }
     }
 }
