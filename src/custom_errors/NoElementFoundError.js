@@ -2,7 +2,7 @@ class NoElementFoundError extends Error {
     constructor(message) {
         super(message);
 
-        this.name = 'CustomError';
+        this.name = 'NoElementFoundError';
         this.statusCode = 404;
     }
 }

@@ -35,11 +35,13 @@ const config = JSON.parse(rawConfig);
 //load and start API-connectors
 const OrangeHRMConnector = require('./src/connectors/OrangeHRM');
 const oHRM = new OrangeHRMConnector(config["OrangeHRM_URL"], config["OrangeHRM_username"], config["OrangeHRM_password"], 2);
+app.set('oHRM', oHRM);
 const OpenCRXConnector = require('./src/connectors/OpenCRX');
 const oCRX = new OpenCRXConnector(config["OpenCRX_URL"], config["OpenCRX_username"], config["OpenCRX_password"]);
+app.set('oCRX', oCRX);
 
 //loading local apis
-const Authentification = require('./src/api/Authentification');
+const Authentication = require('./src/api/Authentication');
 const User = require('./src/api/User');
 const Salesman = require('./src/api/Salesman');
 const EvaluationRecord = require('./src/api/EvaluationRecord');
@@ -71,8 +73,8 @@ MongoClient.connect("mongodb://"+ auth + config["MongoDB_domain"] + ":" + config
 
 // auth
 
-app.post('/auth', Authentification.authenticate);
-app.delete('/auth', Authentification.deAuthenticate);
+app.post('/auth', Authentication.authenticate);
+app.delete('/auth', Authentication.deAuthenticate);
 
 
 // Users
