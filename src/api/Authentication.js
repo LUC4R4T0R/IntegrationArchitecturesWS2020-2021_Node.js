@@ -1,5 +1,5 @@
-let user_service = require('../services/User');
-let auth_service = require('../services/Authentication');
+const user_service = require('../services/User');
+const auth_service = require('../services/Authentication');
 
 exports.authenticate = function (req, res) {
     let db = req.app.get('db');
