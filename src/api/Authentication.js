@@ -23,7 +23,3 @@ exports.deAuthenticate = function (req, res) {
     auth_service.deAuthenticate(req.session);
     res.send();
 }
-
-exports.currentUser = function (req, res) {
-    res.send(req.session.user);
-}

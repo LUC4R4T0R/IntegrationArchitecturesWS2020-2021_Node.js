@@ -32,6 +32,9 @@ exports.find = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
+            if (parseInt(req.params.username) === -1){
+                return user_service.getUser(db, req.session.user);
+            }
             return user_service.getUser(db, req.params.username);
         })
         .then(result => res.send(result))

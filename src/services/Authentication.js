@@ -2,7 +2,6 @@ let NotAuthenticatedError = require('../custom_errors/NotAuthenticatedError');
 
 exports.authenticated = async function (session) {
     if (session !== undefined && session.loggedIn) {
-        console.log(session);
         return;
     }
     throw new NotAuthenticatedError();
