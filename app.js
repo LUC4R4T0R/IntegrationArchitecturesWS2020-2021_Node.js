@@ -1,21 +1,22 @@
 //express
 const express = require('express');
 const app = express();
-
+const apiRouter = express.Router();
+app.use('/api', apiRouter);
 
 //support for different bodies
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const upload = multer();
-app.use(bodyParser.json()); //adds support for json encoded bodies
-app.use(bodyParser.urlencoded({extended: true})); //adds support url encoded bodies
-app.use(upload.array()); //adds support multipart/form-data bodies
+apiRouter.use(bodyParser.json()); //adds support for json encoded bodies
+apiRouter.use(bodyParser.urlencoded({extended: true})); //adds support url encoded bodies
+apiRouter.use(upload.array()); //adds support multipart/form-data bodies
 
 
 //session configuration
 const session = require('express-session');
 const crypto = require('crypto');
-app.use(session({
+apiRouter.use(session({
    secret: crypto.randomBytes(32).toString('hex'),
    resave: false,
    saveUninitialized: false,
@@ -29,7 +30,7 @@ app.use(session({
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('swagger.yml');
-app.use('/swagger-api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+apiRouter.use('/swagger-api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 //load config data
@@ -83,32 +84,40 @@ const Salesman = require('./src/api/Salesman');
 const EvaluationRecord = require('./src/api/EvaluationRecord');
 const EvaluationRecordEntry = require('./src/api/EvaluationRecordEntry');
 
+//routers
+const authRouter = express.Router();
+apiRouter.use('/auth', authRouter);
+const userRouter = express.Router();
+apiRouter.use('/user',userRouter);
+const salesmanRouter = express.Router();
+apiRouter.use('/salesman', salesmanRouter);
+
 // auth
-app.post('/auth', Authentication.authenticate);
-app.delete('/auth', Authentication.deAuthenticate);
+authRouter.post('', Authentication.authenticate);
+authRouter.delete('', Authentication.deAuthenticate);
 
 // Users
-app.post('/user', User.add);
-app.get('/user', User.list);
-app.get('/user/:username', User.get);
-app.put('/user', User.update);
-app.delete('/user/:username', User.remove);
+userRouter.post('', User.add);
+userRouter.get('', User.list);
+userRouter.get('/:username', User.get);
+userRouter.put('', User.update);
+userRouter.delete('/:username', User.remove);
 
 // Salesman
-app.post('/salesman',Salesman.addBonus);
-app.get('/salesman', Salesman.list);
-app.get('/salesman/:id', Salesman.find);
+salesmanRouter.post('',Salesman.addBonus);
+salesmanRouter.get('', Salesman.list);
+salesmanRouter.get('/:id', Salesman.find);
 
 // EvaluationRecord
-app.post('/salesman/:id/evaluationrecord', EvaluationRecord.create);
-app.get('/salesman/:id/evaluationrecord', EvaluationRecord.list);
-app.get('/salesman/:id/evaluationrecord/:year', EvaluationRecord.find);
-app.delete('/salesman/:id/evaluationrecord/:year', EvaluationRecord.remove);
+salesmanRouter.post('/:id/evaluationrecord', EvaluationRecord.create);
+salesmanRouter.get('/:id/evaluationrecord', EvaluationRecord.list);
+salesmanRouter.get('/salesman/:id/evaluationrecord/:year', EvaluationRecord.find);
+salesmanRouter.delete('/salesman/:id/evaluationrecord/:year', EvaluationRecord.remove);
 
 // EvaluationRecordEntry
-app.post('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.create);
-app.get('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.list);
-app.get('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.find);
-app.put('/salesman/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.update);
-app.delete('/salesman/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.remove);
+salesmanRouter.post('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.create);
+salesmanRouter.get('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.list);
+salesmanRouter.get('/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.find);
+salesmanRouter.put('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.update);
+salesmanRouter.delete('/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.remove);
 
