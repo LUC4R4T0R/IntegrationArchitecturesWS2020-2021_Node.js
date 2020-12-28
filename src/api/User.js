@@ -1,4 +1,3 @@
-
 let user_service = require('../services/User');
 let auth_service = require('../services/Authentication');
 
@@ -8,7 +7,7 @@ exports.create = function (req, res) {
             let db = req.app.get('db');
             return user_service.addUser(db, req.body)
         })
-        .then(() => res.send('success'))
+        .then(result => res.send(result))
         .catch(() => res.status(400).send("fail"));
 }
 
