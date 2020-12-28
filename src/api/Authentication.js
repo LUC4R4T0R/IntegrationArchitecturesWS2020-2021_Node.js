@@ -6,7 +6,7 @@ exports.authenticate = function (req, res){
     user_service.verifyUser(db, req.body.username, req.body.password)
         .then(() => {
             auth_service.authenticate(req.session);
-            res.send("success");
+            res.send('success');
         })
         .catch((error) => res.status(error.statusCode).send(error.message));
 }

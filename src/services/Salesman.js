@@ -1,4 +1,3 @@
-let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
 

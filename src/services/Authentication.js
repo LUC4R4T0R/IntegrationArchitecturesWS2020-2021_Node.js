@@ -1,6 +1,6 @@
 let NotAuthenticatedError = require('../custom_errors/NotAuthenticatedError');
 
-exports.authenticated = function(session){
+exports.authenticated = async function(session){
     if(session !== undefined && session.loggedIn){
         return;
     }
