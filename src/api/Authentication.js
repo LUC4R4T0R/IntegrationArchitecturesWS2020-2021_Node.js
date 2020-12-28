@@ -11,6 +11,14 @@ exports.authenticate = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
+exports.isAuthenticated = function (req, res) {
+    auth_service.authenticated(req.session).then(() => {
+        res.send(true);
+    }).catch(() =>{
+            res.send(false);
+    });
+}
+
 exports.deAuthenticate = function (req, res) {
     auth_service.deAuthenticate(req.session);
     res.send();

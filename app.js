@@ -97,6 +97,7 @@ apiRouter.use('/salesman', salesmanRouter);
 // auth
 authRouter.post('', Authentication.authenticate);
 authRouter.delete('', Authentication.deAuthenticate);
+authRouter.get('', Authentication.isAuthenticated);
 
 // Users
 userRouter.post('', User.create);
