@@ -1,6 +1,8 @@
 //express
 const express = require('express');
 const app = express();
+
+//base route
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
@@ -84,7 +86,7 @@ const Salesman = require('./src/api/Salesman');
 const EvaluationRecord = require('./src/api/EvaluationRecord');
 const EvaluationRecordEntry = require('./src/api/EvaluationRecordEntry');
 
-//routers
+//extended routes
 const authRouter = express.Router();
 apiRouter.use('/auth', authRouter);
 const userRouter = express.Router();
@@ -97,9 +99,9 @@ authRouter.post('', Authentication.authenticate);
 authRouter.delete('', Authentication.deAuthenticate);
 
 // Users
-userRouter.post('', User.add);
+userRouter.post('', User.create);
 userRouter.get('', User.list);
-userRouter.get('/:username', User.get);
+userRouter.get('/:username', User.find);
 userRouter.put('', User.update);
 userRouter.delete('/:username', User.remove);
 
@@ -111,8 +113,8 @@ salesmanRouter.get('/:id', Salesman.find);
 // EvaluationRecord
 salesmanRouter.post('/:id/evaluationrecord', EvaluationRecord.create);
 salesmanRouter.get('/:id/evaluationrecord', EvaluationRecord.list);
-salesmanRouter.get('/salesman/:id/evaluationrecord/:year', EvaluationRecord.find);
-salesmanRouter.delete('/salesman/:id/evaluationrecord/:year', EvaluationRecord.remove);
+salesmanRouter.get('/:id/evaluationrecord/:year', EvaluationRecord.find);
+salesmanRouter.delete('/:id/evaluationrecord/:year', EvaluationRecord.remove);
 
 // EvaluationRecordEntry
 salesmanRouter.post('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.create);
