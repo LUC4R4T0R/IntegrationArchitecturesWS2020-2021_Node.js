@@ -1,5 +1,6 @@
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
+let Salesman = require('../models/Salesman');
 
 //add a bonus salary to a salesman
 exports.addBonus = async function (orange, id, year, amount) {
@@ -20,9 +21,13 @@ exports.readSalesman = async function (orange, id, queryString) {
         throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
     } else {
         if (id === undefined && queryString === undefined) {
-            return await orange.getSalesmen();
+            let sms = await orange.getSalesmen();
+            return sms.map(sm => {
+                return new Salesman(sm.code, sm.firstName, sm.lastName);
+            });
         } else if (queryString === undefined) {
-            return await orange.getEmployeeInfo(id);
+            let sm = await orange.getEmployeeInfo(id);
+            return await new Salesman(sm.code, sm.firstName, sm.lastName);
         }
     }
 };
