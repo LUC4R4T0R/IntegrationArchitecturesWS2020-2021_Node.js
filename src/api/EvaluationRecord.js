@@ -1,17 +1,13 @@
 const evaluationRecord_service = require('../services/EvaluationRecord');
 const auth_service = require('../services/Authentication');
-const record = require('../models/EvaluationRecord');
+const EvaluationRecord = require('../models/EvaluationRecord');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            if (testIfBodyIsCorrect(req)) {
-                return evaluationRecord_service.createEvaluationRecord(db, req.params.id, req.body);
-            } else {
-                throw new BadInputError();
-            }
+            return evaluationRecord_service.createEvaluationRecord(db, req.params.id, inputFilter(req.body));
         })
         .then(() => res.send('success'))
         .catch((error) => res.status(error.statusCode).send(error.message));
@@ -49,8 +45,10 @@ exports.remove = function (req, res) {
 
 }
 
-function testIfBodyIsCorrect(req) {
-    let keysUser = Object.keys(new record(2020));
-    let keysBody = Object.keys(req.body);
-    return JSON.stringify(keysUser) === JSON.stringify(keysBody);
+function inputFilter(record) {
+    try{
+        return new EvaluationRecord(record.year);
+    }catch(e){
+        throw new BadInputError('The given record does not match the model of an record!');
+    }
 }

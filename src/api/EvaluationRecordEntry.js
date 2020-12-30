@@ -1,20 +1,16 @@
 const evaluationRecordEntry_service = require('../services/EvaluationRecordEntry');
 const auth_service = require('../services/Authentication');
-const entry = require('../models/EvaluationRecordEntry');
+const EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            if (testIfBodyIsCorrect(req)){
-                return evaluationRecordEntry_service.createEvaluationRecordEntry(db, req.params.id, req.params.year, req.body);
-            } else {
-                throw new BadInputError();
-            }
+            return evaluationRecordEntry_service.createEvaluationRecordEntry(db, req.params.id, req.params.year, inputFilter(req.body));
         })
         .then(() => res.send('success'))
-        .catch((error) => res.status(error.statusCode).send(error.message));
+        .catch((error) => {console.log(error); res.status(error.statusCode).send(error.message)});
 }
 
 exports.list = function (req, res) {
@@ -42,15 +38,10 @@ exports.update = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            if (testIfBodyIsCorrect(req)){
-                return evaluationRecordEntry_service.updateEvaluationRecordEntry(db, req.params.id, req.params.year, req.body);
-            } else {
-                throw new BadInputError();
-            }
+            return evaluationRecordEntry_service.updateEvaluationRecordEntry(db, req.params.id, req.params.year, inputFilter(req.body));
         })
         .then(() => res.send('success'))
         .catch((error) => res.status(error.statusCode).send(error.message));
-
 }
 
 exports.remove = function (req, res) {
@@ -63,8 +54,10 @@ exports.remove = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-function testIfBodyIsCorrect(req) {
-    let keysUser = Object.keys(new entry('', '', ''));
-    let keysBody = Object.keys(req.body);
-    return JSON.stringify(keysUser) === JSON.stringify(keysBody);
+function inputFilter(entry) {
+    try{
+        return new EvaluationRecordEntry(entry.name, entry.target, entry.actual);
+    }catch(e){
+        throw new BadInputError('The given entry does not match the model of an entry!');
+    }
 }

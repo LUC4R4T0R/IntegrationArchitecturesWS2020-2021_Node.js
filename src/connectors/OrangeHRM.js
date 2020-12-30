@@ -30,6 +30,7 @@ class OrangeHRMConnector{
                 }
             );
             this.token = request.data.access_token;
+            this.expiration = Math.floor(Date.now() / 1000) + request.data.expires_in - 5; //expiration time minus 5 seconds for good measure
             console.log('OrangeHRM | bearer-token obtained');
         } catch (error){
             console.error('ERROR OrangeHRM | obtaining bearer-token failed: ' + error);
@@ -42,6 +43,7 @@ class OrangeHRMConnector{
      * @returns {Promise<*>}
      */
     async resolveEmployeeId(id) {
+        await this.expirationCheck();
         try {
             let request = await axios.get(
                 this.url + '/api/v1/employee/search?code=' + id,
@@ -84,6 +86,7 @@ class OrangeHRMConnector{
      * @returns {Promise<*>}
      */
     async getSalesmen(){
+        await this.expirationCheck();
         if(this.smUnit !== undefined){
             try{
                 let request = await axios.get(
@@ -130,6 +133,15 @@ class OrangeHRMConnector{
             console.log('OrangeHRM | bonus salary added');
         } catch (error){
             throw new Error('ERROR OrangeHRM | adding bonus salary failed: ' + error);
+        }
+    }
+
+    /**
+     * checks if the Bearer-Token is still valid and requests a new one if necessary
+     */
+    async expirationCheck(){
+        if(this.expiration <= Math.floor(Date.now() / 1000)){
+            await this.getToken();
         }
     }
 }
