@@ -6,6 +6,7 @@
   "MongoDB_username": "",
   "MongoDB_password": "",
   "MongoDB_database": "ia2020",
+  "MongoDB_database_test": "test_Database",
 
   "OrangeHRM_username": "",
   "OrangeHRM_password": "",
