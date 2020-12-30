@@ -31,7 +31,7 @@ exports.readEvaluationRecord = async function (db, id, year) {
     if (db === undefined || id === undefined) {
         throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
     } else {
-        if (id !== undefined && year !== undefined) {
+        if (year !== undefined) {
             if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g)) {
                 throw new BadInputError();
             }
@@ -45,16 +45,18 @@ exports.readEvaluationRecord = async function (db, id, year) {
                 //return the record of the given salesman in the given year
                 return test1[0];
             }
-        } else if (year === undefined) {
+        } else {
             if (!id.match(/^[\d]+$/g)) {
                 throw new BadInputError();
             }
-            let test = await db.collection("records").find({id: parseInt(id)}).toArray();
-            if (test.length === 0) {
-                throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
-            } else {
-                //return all records of this salesman
-                return test;
+            {
+                let test = await db.collection("records").find({id: parseInt(id)}).toArray();
+                if (test.length === 0) {
+                    throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
+                } else {
+                    //return all records of this salesman
+                    return test;
+                }
             }
         }
     }
