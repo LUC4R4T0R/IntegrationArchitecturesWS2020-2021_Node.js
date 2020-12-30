@@ -27,7 +27,7 @@ exports.readSalesman = async function (orange, id, queryString) {
             });
         } else if (queryString === undefined) {
             let sm = await orange.getEmployeeInfo(id);
-            return await new Salesman(sm.code, sm.firstName, sm.lastName);
+            return new Salesman(sm.code, sm.firstName, sm.lastName);
         }
     }
 };
