@@ -3,6 +3,7 @@ let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
+let EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
 
 //create EvaluationRecordentry
 exports.createEvaluationRecordEntry = async function (db, id, year, evaluationrecordentry) {
@@ -14,21 +15,9 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationre
     } else {
         //get the record-entries
         let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
-        let list = evaluationRecord1.EvaluationRecord.entries;
+        let list = evaluationRecord1.entries;
 
-        //check if name already exists
-        let name_exists = false;
-        if (list === undefined) {
-            list = [];
-        } else {
-            for (let i = 0; i < list.length; i++) {
-                if (evaluationrecordentry.name === list[i].name) {
-                    name_exists = true;
-                }
-            }
-        }
-
-        if (name_exists) {
+        if (list.filter(x => x.name === evaluationrecordentry.name).length > 0) { //check if name already exists
             throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecordEntry that already exists!");
         } else {
             //add the entry and update the record
@@ -58,19 +47,16 @@ exports.readEvaluationRecordEntry = async function (db, id, year, name) {
             }
             //get all entries of one id-year combination
             let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
-            return evaluationRecord1.EvaluationRecord.entries;
+            return evaluationRecord1.entries.map(entry => new EvaluationRecordEntry(entry.name, entry.target, entry.actual));
         } else {
             if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g) || !name.match(/^[\w]+$/g)) {
                 throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234) and the name must be at least a character (example input 'a')!");
             }
             //get one entry of one id-year combination
             let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
-            let list = evaluationRecord1.EvaluationRecord.entries;
-            for (let i = 0; i < list.length; i++) {
-                if (name === list[i].name) {
-                    return list[i];
-                }
-            }
+            let entry = evaluationRecord1.entries.filter(x => x.name === name);
+            if(entry.length > 0) return new EvaluationRecordEntry(entry[0].name, entry[0].target, entry[0].actual);
+            else throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecordEntry with the name: " + name + " !");
         }
     }
 };
@@ -85,16 +71,18 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationre
     } else {
         //get the record-entries
         let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
-        let list = evaluationRecord1.EvaluationRecord.entries;
+        let list = evaluationRecord1.entries;
 
-        let worked = false;
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].name === evaluationrecordentry.name) {
-                list[i] = evaluationrecordentry;
-                worked = true;
+        let changed = false;
+        list = list.map(x => {
+            if(x.name === evaluationrecordentry.name){
+                changed = true;
+                return evaluationrecordentry;
             }
-        }
-        if (worked) {
+            return x;
+        })
+
+        if (changed) {
             //update records with new entries
             let newvalues = {
                 $set: {
@@ -122,20 +110,12 @@ exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
     } else {
         //get the record-entries
         let evaluationRecord1 = await evaluationrecord_service.readEvaluationRecord(db, id, year);
-        let list = evaluationRecord1.EvaluationRecord.entries;
+        let list = evaluationRecord1.entries;
 
-        let worked = false;
         //filter out the entry to delete it
-        let newentries = [];
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].name !== name) {
-                newentries.push(list[i]);
-            } else {
-                worked = true;
-            }
-        }
+        let newentries = list.filter(x => x.name !== name);
 
-        if (worked) {
+        if (newentries.length !== list.length) {
             //update records with new entries
             let newvalues = {
                 $set: {
