@@ -4,86 +4,97 @@ let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
 let EvaluationRecord = require('../models/EvaluationRecord');
 
-//create EvaluationRecord
 exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
-    if (db === undefined || id === undefined || evaluationRecord === undefined) {
-        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
-    }
-    if (!id.match(/^[\d]+$/g)) {
-        throw new BadInputError();
-    } else {
-        let test = await db.collection("records").find({
+    checkIfParamIsUndefined(db, id, null, evaluationRecord);
+    checkForBadInput(id);
+    if (await checkIfThisRecordDontExist(db, id, evaluationRecord.year)) {
+        await db.collection("records").insertOne({
             id: parseInt(id),
-            "EvaluationRecord.year": parseInt(evaluationRecord.year)
-        }).toArray();
-        if (test.length === 0) {
-            await db.collection("records").insertOne({
-                id: parseInt(id),
-                EvaluationRecord: evaluationRecord
-            });
-        } else {
-            throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecord that already exists!");
-        }
+            EvaluationRecord: evaluationRecord
+        });
+    } else {
+        throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecord that already exists!");
     }
 };
 
-//read EvaluationRecord
 exports.readEvaluationRecord = async function (db, id, year) {
-    if (db === undefined || id === undefined) {
-        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
-    } else {
-        if (year !== undefined) {
-            if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g)) {
-                throw new BadInputError();
-            }
-            let test1 = await db.collection("records").findOne({
-                id: parseInt(id),
-                "EvaluationRecord.year": parseInt(year)
-            });
-            if (test1 === null) {
-                throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
-            } else {
-                //return the record of the given salesman in the given year
-                let rec = test1.EvaluationRecord;
-                return new EvaluationRecord(rec.year, rec.entries);
-            }
+    checkIfParamIsUndefined(db, id);
+    if (year !== undefined) { // get One EvaluationRecord
+        checkForBadInput(id, year);
+        if (await checkIfThisRecordDontExist(db, id, year)) {
+            throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
         } else {
-            if (!id.match(/^[\d]+$/g)) {
-                throw new BadInputError();
-            }
-            let test = await db.collection("records").find({id: parseInt(id)}).toArray();
-            if (test.length === 0) {
-                throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
-            } else {
-                //return all records of this salesman
-                return test.map(rec => {
-                    return new EvaluationRecord(rec.EvaluationRecord.year, rec.EvaluationRecord.entries);
-                });
-            }
+            return await recordWithoutTheSalesmanId(db, id, year);
+        }
+    } else { // get all EvaluationRecords for this Salesman
+        checkForBadInput(id);
+        let theRecordsThatAreRequested = await db.collection("records").find({id: parseInt(id)}).toArray();
+        if (checkIfListEqualsZero(theRecordsThatAreRequested)) {
+            throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
+        } else {
+            return theRecordsThatAreRequested.map(record => {
+                return new EvaluationRecord(record.EvaluationRecord.year, record.EvaluationRecord.entries);
+            });
         }
     }
 };
 
-//delete EvaluationRecord
 exports.deleteEvaluationRecord = async function (db, id, year) {
-    if (db === undefined || id === undefined || year === undefined) {
-        throw new MissingElementError("MissingElementError: At least one of the required parameters is undefined!");
-    }
-    if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g)) {
-        throw new BadInputError("BadInputError: The id and year must be numbers (example input: 1234)");
+    checkIfParamIsUndefined(db, id, year);
+    checkForBadInput(id, year);
+    if (await checkIfThisRecordDontExist(db, id, year)) {
+        throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
     } else {
-        let test = await db.collection("records").find({
+        await db.collection("records").deleteOne({
             id: parseInt(id),
             "EvaluationRecord.year": parseInt(year)
-        }).toArray();
-        if (test.length !== 0) {
-            await db.collection("records").deleteOne({
-                id: parseInt(id),
-                "EvaluationRecord.year": parseInt(year)
-            });
-        } else {
-            throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
-        }
+        });
     }
-
 };
+
+
+//-------------------------------------helper-------------------------------------------------------
+//maybe global
+function checkIfParamIsUndefined(db, id, year = null, evaluationRecord = null) {
+    if (db === undefined || id === undefined || year === undefined || evaluationRecord === undefined) {
+        throw new MissingElementError();
+    }
+}
+
+function checkForBadInput(id, year = "0") {
+    if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g)) {
+        throw new BadInputError();
+    }
+}
+
+
+//...
+function recordWithoutTheSalesmanId(db, id, year) {
+    return getTheRecord(db, id, year)
+        .then((ret) => {
+            return ret.EvaluationRecord;
+        })
+        .then((ret) => {
+            return new EvaluationRecord(ret.year, ret.entries);
+        });
+}
+
+function checkIfListEqualsZero(list) {
+    return list.length === 0;
+}
+
+
+//often
+function checkIfThisRecordDontExist(db, id, year) {
+    return getTheRecord(db, id, year)
+        .then((val) => {
+            return val === null;
+        });
+}
+
+function getTheRecord(db, id, year) {
+    return db.collection("records").findOne({
+        id: parseInt(id),
+        "EvaluationRecord.year": parseInt(year)
+    });
+}
