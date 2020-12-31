@@ -2,6 +2,7 @@ let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
+let EvaluationRecord = require('../models/EvaluationRecord');
 
 //create EvaluationRecord
 exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
@@ -35,28 +36,29 @@ exports.readEvaluationRecord = async function (db, id, year) {
             if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g)) {
                 throw new BadInputError();
             }
-            let test1 = await db.collection("records").find({
+            let test1 = await db.collection("records").findOne({
                 id: parseInt(id),
                 "EvaluationRecord.year": parseInt(year)
-            }).toArray();
-            if (test1.length === 0) {
+            });
+            if (test1 === null) {
                 throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
             } else {
                 //return the record of the given salesman in the given year
-                return test1[0];
+                let rec = test1.EvaluationRecord;
+                return new EvaluationRecord(rec.year, rec.entries);
             }
         } else {
             if (!id.match(/^[\d]+$/g)) {
                 throw new BadInputError();
             }
-            {
-                let test = await db.collection("records").find({id: parseInt(id)}).toArray();
-                if (test.length === 0) {
-                    throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
-                } else {
-                    //return all records of this salesman
-                    return test;
-                }
+            let test = await db.collection("records").find({id: parseInt(id)}).toArray();
+            if (test.length === 0) {
+                throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
+            } else {
+                //return all records of this salesman
+                return test.map(rec => {
+                    return new EvaluationRecord(rec.EvaluationRecord.year, rec.EvaluationRecord.entries);
+                });
             }
         }
     }
