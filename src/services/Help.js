@@ -1,8 +1,8 @@
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
 
-exports.checkIfParamIsUndefined = function (db, id, year = null, evaluationRecordOrEntry = null, name = null) {
-    if (db === undefined || id === undefined || year === undefined || evaluationRecordOrEntry === undefined || name === undefined) {
+exports.checkIfParamIsUndefined = function (db, one, two, three) {
+    if (db === undefined || one === undefined || two === undefined || three === undefined) {
         throw new MissingElementError();
     }
 }

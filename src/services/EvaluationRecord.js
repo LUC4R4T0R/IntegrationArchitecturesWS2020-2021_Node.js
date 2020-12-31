@@ -4,7 +4,7 @@ let EvaluationRecord = require('../models/EvaluationRecord');
 let helper_function = require('./Help');
 
 exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
-    helper_function.checkIfParamIsUndefined(db, id, null, evaluationRecord);
+    helper_function.checkIfParamIsUndefined(db, id, evaluationRecord,null);
     helper_function.checkForBadInput(id);
 
     if (await checkIfThisRecordDontExist(db, id, evaluationRecord.year)) {
@@ -18,7 +18,7 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
 };
 
 exports.readEvaluationRecord = async function (db, id, year) {
-    helper_function.checkIfParamIsUndefined(db, id);
+    helper_function.checkIfParamIsUndefined(db, id,null,null);
 
     if (year !== undefined) { // get One EvaluationRecord
         helper_function.checkForBadInput(id, year);
@@ -42,7 +42,7 @@ exports.readEvaluationRecord = async function (db, id, year) {
 };
 
 exports.deleteEvaluationRecord = async function (db, id, year) {
-    helper_function.checkIfParamIsUndefined(db, id, year);
+    helper_function.checkIfParamIsUndefined(db, id, year,null);
     helper_function.checkForBadInput(id, year);
 
     if (await checkIfThisRecordDontExist(db, id, year)) {

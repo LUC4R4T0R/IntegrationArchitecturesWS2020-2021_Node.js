@@ -13,12 +13,12 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationRe
         throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecordEntry that already exists!");
     } else {
         allEntries.push(evaluationRecordEntry);
-        await updateTheRecord(db,id,year,allEntries);
+        await updateTheRecord(db, id, year, allEntries);
     }
 };
 
 exports.readEvaluationRecordEntry = async function (db, id, year, name) {
-    helper_function.checkIfParamIsUndefined(db, id, year);
+    helper_function.checkIfParamIsUndefined(db, id, year, null);
 
     if (name === undefined) {
         helper_function.checkForBadInput(id);
@@ -52,20 +52,20 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationRe
         return x;
     })
     if (changed) {
-        await updateTheRecord(db,id,year,allEntries);
+        await updateTheRecord(db, id, year, allEntries);
     } else {
         throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecordEntry (EvaluationRecord id: " + id + " ,year: " + year + ") with the name: " + evaluationRecordEntry.name + "!");
     }
 };
 
 exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
-    helper_function.checkIfParamIsUndefined(db, id, year, null, name);
+    helper_function.checkIfParamIsUndefined(db, id, year, name);
     helper_function.checkForBadInput(id, year, name);
 
     let allEntries = await getAllEntriesOfThisSalesmanInThisYear(db, id, year);
     let entriesWithoutTheOneToDelete = allEntries.filter(x => x.name !== name);
     if (entriesWithoutTheOneToDelete.length !== allEntries.length) {
-        await updateTheRecord(db,id,year,entriesWithoutTheOneToDelete);
+        await updateTheRecord(db, id, year, entriesWithoutTheOneToDelete);
     } else {
         throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecordEntry (EvaluationRecord id: " + id + " ,year: " + year + ") with the name: " + name + "!");
     }
@@ -87,7 +87,7 @@ function getAllEntriesOfThisSalesmanInThisYear(db, id, year) {
 
 
 //used multiple times
-async function updateTheRecord(db,id,year, list){
+async function updateTheRecord(db, id, year, list) {
     let newValues = {
         $set: {
             "EvaluationRecord.year": parseInt(year),

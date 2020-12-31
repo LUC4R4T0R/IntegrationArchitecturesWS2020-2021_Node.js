@@ -1,64 +1,89 @@
 const bcrypt = require('bcrypt');
 let BadCredentialsError = require('../custom_errors/BadCredentialsError');
-let BadInputError = require('../custom_errors/BadInputError');
 let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
 let NoElementFoundError = require('../custom_errors/NoElementFoundError');
+let helper_function = require('./Help');
 
 exports.addUser = async function (db, user) {
-    if (db === undefined || user === undefined) {
-        throw new BadInputError();
-    } else {
-        let test = await db.collection("users").find({username: user.username}).toArray();
-        if (test.length === 0) {
-            bcrypt.hash(user.password, 10).then(async function (pwHash) {
+    helper_function.checkIfParamIsUndefined(db, user, null, null);
+    helper_function.checkForBadInput(user.password, "0", user.username);
+
+    let userWithThisName = await db.collection("users").findOne({username: user.username});
+    if (userWithThisName === null) {
+        bcrypt.hash(user.password, 10)
+            .then(async function (pwHash) {
                 user.password = pwHash;
                 await db.collection("users").insertOne(user);
                 return "Added new User: " + user.displayname;
-            }).catch((err) => {
+            })
+            .catch(() => {
                 throw new Error('Unable to hash password!');
             });
+    } else {
+        throw new ElementDuplicateError('ElementDuplicateError: A user with the given username already exists!');
+    }
+}
+
+exports.readUser = async function (db, username) {
+    helper_function.checkIfParamIsUndefined(db, username, null, null);
+
+    if (username === undefined) { //all users
+        let allUsers = await db.collection('users').find().toArray();
+        if (allUsers === null) {
+            throw new NoElementFoundError('NoElementFoundError: No user was found!');
         } else {
-            throw new ElementDuplicateError('ElementDuplicateError: A user with the given username already exists!');
+            return allUsers.map((user) => {
+                return {displayname: allUsers.displayname, username: allUsers.username};
+            });
         }
-    }
-}
+    } else { // one user
+        helper_function.checkForBadInput("0", "0", username);
 
-exports.listUsers = async function (db) {
-    let users = await db.collection('users').find();
-    return users.map((user) => {
-        return {displayname: user.displayname, username: user.username};
-    });
-}
-
-exports.getUser = async function (db, username) {
-    let user = await db.collection('users').findOne({username: username});
-    if (user != null && user !== undefined) {
-        return {displayname: user.displayname, username: user.username};
+        let userWithThisName = await db.collection('users').findOne({username: username});
+        if (userWithThisName !== null) {
+            return {displayname: userWithThisName.displayname, username: userWithThisName.username};
+        }
+        throw new NoElementFoundError('NoElementFoundError: The specified user was not found!');
     }
-    throw new NoElementFoundError('NoElementFoundError: The specified user was not found!');
 }
 
 exports.updateUser = async function (db, user) {
-    await db.collection('users').findOneAndUpdate({username: user.username}, {"$set": {"displayname": user.displayname}});
+    helper_function.checkIfParamIsUndefined(db, user, null, null);
+    helper_function.checkForBadInput(user.password, "0", user.username)
+
+    let userWithThisName = await db.collection("users").findOne({username: user.username});
+    if (userWithThisName === null) {
+        throw new NoElementFoundError('NoElementFoundError: There is no user with this username!');
+    } else {
+        await db.collection('users').findOneAndUpdate({username: user.username}, {"$set": {"displayname": user.displayname}});
+    }
 }
 
 exports.deleteUser = async function (db, username) {
-    await db.collection('users').deleteOne({username: username});
+    helper_function.checkIfParamIsUndefined(db, username, null, null);
+    helper_function.checkForBadInput("0", "0", username);
+
+    let userWithThisName = await db.collection("users").findOne({username: username});
+    if (userWithThisName === null) {
+        throw new NoElementFoundError('NoElementFoundError: There is no user with this username!');
+    } else {
+        await db.collection('users').deleteOne({username: username});
+    }
 }
 
 exports.verifyUser = async function (db, username, password) {
-    if (db === undefined || username === undefined || password === undefined) {
-        throw new BadInputError();
+    helper_function.checkIfParamIsUndefined(db, username, password, null);
+    helper_function.checkForBadInput(password, "0", username);
+
+    let userWithThisName = await db.collection("users").findOne({username: username});
+    if (userWithThisName !== null) {
+        await bcrypt.compare(password, userWithThisName.password).then((res) => {
+            if (res === false) {
+                throw new BadCredentialsError();
+            }
+        });
     } else {
-        let user = await db.collection("users").findOne({username: username});
-        if (user !== undefined && user !== null) {
-            await bcrypt.compare(password, user.password).then((res) => {
-                if (res === false) {
-                    throw new BadCredentialsError();
-                }
-            });
-        } else {
-            throw new NoElementFoundError('NoElementFoundError: The given user is unknown!');
-        }
+        throw new NoElementFoundError('NoElementFoundError: The given user is unknown!');
     }
+
 }

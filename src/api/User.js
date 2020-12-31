@@ -18,7 +18,7 @@ exports.list = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            return user_service.listUsers(db);
+            return user_service.readUser(db);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
@@ -29,9 +29,9 @@ exports.find = function (req, res) {
         .then(() => {
             let db = req.app.get('db');
             if (parseInt(req.params.username) === -1){
-                return user_service.getUser(db, req.session.user);
+                return user_service.readUser(db, req.session.user);
             }
-            return user_service.getUser(db, req.params.username);
+            return user_service.readUser(db, req.params.username);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
