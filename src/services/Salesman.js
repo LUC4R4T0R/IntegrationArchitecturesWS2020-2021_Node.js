@@ -23,11 +23,11 @@ exports.readSalesman = async function (orange, id, queryString) {
         if (id === undefined && queryString === undefined) {
             let sms = await orange.getSalesmen();
             return sms.map(sm => {
-                return new Salesman(sm.code, sm.firstName, sm.lastName);
+                return new Salesman(parseInt(sm.code), sm.firstName, sm.lastName);
             });
         } else if (queryString === undefined) {
             let sm = await orange.getEmployeeInfo(id);
-            return new Salesman(sm.code, sm.firstName, sm.lastName);
+            return new Salesman(parseInt(sm.code), sm.firstName, sm.lastName);
         }
     }
 };
