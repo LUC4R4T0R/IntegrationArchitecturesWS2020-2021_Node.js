@@ -10,7 +10,7 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
     if (await checkIfThisRecordDontExist(db, id, evaluationRecord.year)) {
         await db.collection("records").insertOne({
             id: parseInt(id),
-            EvaluationRecord: evaluationRecord
+            EvaluationRecord: new EvaluationRecord(parseInt(evaluationRecord.year), evaluationRecord.entries)
         });
     } else {
         throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecord that already exists!");

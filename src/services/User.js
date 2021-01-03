@@ -4,21 +4,18 @@ let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
 let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let helper_function = require('./Help');
 
-exports.addUser = async function (db, user) {
+exports.createUser = async function (db, user) {
     helper_function.checkIfParamIsUndefined(db, user, null, null);
-    helper_function.checkForBadInput(user.password, "0", user.username);
 
     let userWithThisName = await db.collection("users").findOne({username: user.username});
     if (userWithThisName === null) {
-        bcrypt.hash(user.password, 10)
-            .then(async function (pwHash) {
-                user.password = pwHash;
-                await db.collection("users").insertOne(user);
-                return "Added new User: " + user.displayname;
-            })
-            .catch(() => {
-                throw new Error('Unable to hash password!');
-            });
+        try {
+            user.password = await bcrypt.hash(user.password, 10);
+            await db.collection("users").insertOne(user);
+            return "Added new User: " + user.displayname;
+        } catch (e) {
+            throw new Error('Unable to hash password! ' + e);
+        }
     } else {
         throw new ElementDuplicateError('ElementDuplicateError: A user with the given username already exists!');
     }
@@ -37,8 +34,6 @@ exports.readUser = async function (db, username) {
             });
         }
     } else { // one user
-        helper_function.checkForBadInput("0", "0", username);
-
         let userWithThisName = await db.collection('users').findOne({username: username});
         if (userWithThisName !== null) {
             return {displayname: userWithThisName.displayname, username: userWithThisName.username};
@@ -49,7 +44,6 @@ exports.readUser = async function (db, username) {
 
 exports.updateUser = async function (db, user) {
     helper_function.checkIfParamIsUndefined(db, user, null, null);
-    helper_function.checkForBadInput(user.password, "0", user.username)
 
     let userWithThisName = await db.collection("users").findOne({username: user.username});
     if (userWithThisName === null) {
@@ -61,7 +55,6 @@ exports.updateUser = async function (db, user) {
 
 exports.deleteUser = async function (db, username) {
     helper_function.checkIfParamIsUndefined(db, username, null, null);
-    helper_function.checkForBadInput("0", "0", username);
 
     let userWithThisName = await db.collection("users").findOne({username: username});
     if (userWithThisName === null) {
@@ -73,7 +66,6 @@ exports.deleteUser = async function (db, username) {
 
 exports.verifyUser = async function (db, username, password) {
     helper_function.checkIfParamIsUndefined(db, username, password, null);
-    helper_function.checkForBadInput(password, "0", username);
 
     let userWithThisName = await db.collection("users").findOne({username: username});
     if (userWithThisName !== null) {

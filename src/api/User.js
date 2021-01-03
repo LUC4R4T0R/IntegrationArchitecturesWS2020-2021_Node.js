@@ -7,7 +7,7 @@ exports.create = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            return user_service.addUser(db, inputFilter(req.body));
+            return user_service.createUser(db, inputFilter(req.body));
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
