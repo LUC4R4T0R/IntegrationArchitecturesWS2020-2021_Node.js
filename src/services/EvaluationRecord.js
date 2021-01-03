@@ -32,7 +32,7 @@ exports.readEvaluationRecord = async function (db, id, year) {
         helper_function.checkForBadInput(id);
         let theRecordsThatAreRequested = await db.collection("records").find({id: parseInt(id)}).toArray();
         if (checkIfListEqualsZero(theRecordsThatAreRequested)) {
-            throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + "!");
+            return [];
         } else {
             return theRecordsThatAreRequested.map(record => {
                 return new EvaluationRecord(record.EvaluationRecord.year, record.EvaluationRecord.entries);
