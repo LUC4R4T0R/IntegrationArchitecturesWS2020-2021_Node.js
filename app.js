@@ -2,26 +2,17 @@
 const express = require('express');
 const app = express();
 
-//base route
 const apiRouter = express.Router();
 
 const expressControl = require('./src/app_init/express');
 const expressState = expressControl.initExpress(apiRouter);
 
 //load config data
-const fs = require('fs');
-const rawConfig = fs.readFileSync('./config.json');
-const config = JSON.parse(rawConfig);
+const configuration = require('./src/app_init/configuration');
+const config = configuration.loadConfig();
 
-
-//load and start API-connectors
-const OrangeHRMConnector = require('./src/connectors/OrangeHRM');
-const oHRM = new OrangeHRMConnector(
-    config["OrangeHRM_URL"],
-    config["OrangeHRM_username"],
-    config["OrangeHRM_password"],
-    2);
-app.set('oHRM', oHRM);
+const documentation = require('./src/app_init/documentation');
+documentation.registerSwagger(apiRouter);
 
 const remoteConnectors = require('./src/app_init/remoteConnectors');
 const remoteState = remoteConnectors.initRemoteConnectors(app,config);
@@ -35,3 +26,12 @@ const dbState = mongoDB.connectMongoDB(app,config)
 const routing = require('./src/app_init/routing');
 const routingState = routing.applyRouting(app, apiRouter);
 
+Promise.all([
+    expressState,
+    remoteState,
+    dbState,
+    routingState
+])
+    .then(_=>{
+       console.log('All Subsystems loaded!');
+    });
