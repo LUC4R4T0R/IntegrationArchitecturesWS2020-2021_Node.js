@@ -96,11 +96,11 @@ function getTheRecordFromDb(db, id, year) {
 
 function recordWithoutSalesmanId(recordPromise) {
     return recordPromise
-        .then((ret) => {
-            return ret.EvaluationRecord;
+        .then((recordWithIdAndRecord) => {
+            return recordWithIdAndRecord.EvaluationRecord;
         })
-        .then((ret) => {
-            return new EvaluationRecord(ret.year, ret.entries);
+        .then((record) => {
+            return new EvaluationRecord(record.year, record.entries);
         });
 }
 
@@ -142,7 +142,7 @@ function deleteRecordFromDb(db, id, year) {
 //used multiple times
 function checkIfThisRecordDontExist(db, id, year) {
     return getTheRecordFromDb(db, id, year)
-        .then((val) => {
-            return val === null;
+        .then((record) => {
+            return record === null;
         });
 }
