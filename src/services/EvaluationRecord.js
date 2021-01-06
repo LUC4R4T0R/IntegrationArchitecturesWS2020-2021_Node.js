@@ -14,7 +14,7 @@ let helper_function = require('./Help');
 exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
     helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, evaluationRecord, null);
     helper_function.checkForBadInput(id);
-    await insert(db, id, evaluationRecord);
+    await insertRecord(db, id, evaluationRecord);
 };
 
 /**
@@ -23,7 +23,7 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
  * @param db the database
  * @param id the id of the salesman we want the record of
  * @param year the year the record was created
- * @returns {Promise<*>} This method returns one record with the given specs.
+ * @returns {Promise<EvaluationRecord>} This method returns one record with the given specs.
  */
 exports.readOneEvaluationRecord = async function (db, id, year) {
     helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, year, null);
@@ -36,13 +36,12 @@ exports.readOneEvaluationRecord = async function (db, id, year) {
  *
  * @param db the database
  * @param id the id of the salesman we want the record of
- * @returns {Promise<*|*[]|*>} This method returns all records with the given specs.
+ * @returns {Promise<[EvaluationRecord]>} This method returns all records with the given specs.
  */
 exports.readAllEvaluationRecord = async function (db, id) {
     helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, null, null);
     helper_function.checkForBadInput(id);
-    let records = await getRecords(db, id);
-    return recordsWithoutSalesmanId(records);
+    return await getRecords(db, id);
 };
 
 /**
@@ -60,62 +59,95 @@ exports.deleteEvaluationRecord = async function (db, id, year) {
 };
 
 //-------------------------------------helper-------------------------------------------------------
-//create
-async function insert(db, id, evaluationRecord) {
-    let recordDontExist = await checkIfThisRecordDontExist(db, id, evaluationRecord.year)
-    if (recordDontExist) {
-        await insertIntoDB(db, id, evaluationRecord);
+function executeCheckForDbOperation(db, id, year, func, entries){
+    let {iD, yeaR} = idAndYearToInt(id, year);
+    return checkIfThisRecordDontExist(db, iD, yeaR)
+        .then(recordDontExist => {
+            return func(db, iD, yeaR, recordDontExist, entries);
+        });
+}
+
+function idAndYearToInt(id, year = "0"){
+    return {
+        iD: parseInt(id),
+        yeaR: parseInt(year),
+    };
+}
+
+function checkIfThisRecordDontExist(db, id, year) {
+    return getTheRecord(db, id, year)
+        .then((record) => {
+            return record === null;
+        });
+}
+
+function getTheRecord(db, id, year) {
+    return db.collection("records").findOne({
+        id: id,
+        "EvaluationRecord.year": year
+    });
+}
+
+function executeDbOperation(db, id, year, exist, error, func, entries){
+    if (exist) {
+        throw error;
     } else {
-        throw new ElementDuplicateError("ElementDuplicateError: You tried to create an EvaluationRecord that already exists!");
+        return func(db, id, year, entries);
     }
 }
 
-async function insertIntoDB(db, id, evaluationRecord) {
-    await db.collection("records").insertOne({
-        id: parseInt(id),
-        EvaluationRecord: new EvaluationRecord(parseInt(evaluationRecord.year), evaluationRecord.entries)
+//create
+function insertRecord(db, id, evaluationRecord) {
+    return executeCheckForDbOperation(db, id, evaluationRecord.year, tryToInsertIntoDb, evaluationRecord.entries);
+}
+
+function tryToInsertIntoDb(db, id, year, recordDontExist, entries) {
+    let message = "ElementDuplicateError: You tried to create an EvaluationRecord that already exists!";
+    return executeDbOperation(db, id, year, !recordDontExist, new ElementDuplicateError(message), insertRecordIntoDB, entries);
+}
+
+function insertRecordIntoDB(db, id, year, entries) {
+    return db.collection("records").insertOne({
+        id: id,
+        EvaluationRecord: new EvaluationRecord(year, entries)
     });
 }
 
 //read one
-async function getRecord(db, id, year) {
-    if (await checkIfThisRecordDontExist(db, id, year)) {
-        throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
-    } else {
-        let record = getTheRecordFromDb(db, id, year);
-        return await recordWithoutSalesmanId(record);
-    }
+function getRecord(db, id, year) {
+    return executeCheckForDbOperation(db, id, year, tryToGetRecordFromDb);
+}
+
+function tryToGetRecordFromDb(db, id, year, itExists) {
+    let message = "NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!";
+    return executeDbOperation(db, id, year, itExists, new NoElementFoundError(message), getTheRecordFromDb)
 }
 
 function getTheRecordFromDb(db, id, year) {
     return db.collection("records").findOne({
-        id: parseInt(id),
-        "EvaluationRecord.year": parseInt(year)
-    });
-}
-
-function recordWithoutSalesmanId(recordPromise) {
-    return recordPromise
-        .then((recordWithIdAndRecord) => {
-            return recordWithIdAndRecord.EvaluationRecord;
-        })
-        .then((record) => {
+        id: id,
+        "EvaluationRecord.year": year
+    })
+        .then(recordWithId => {
+            let record = recordWithId.EvaluationRecord;
             return new EvaluationRecord(record.year, record.entries);
         });
 }
 
 //read all
 function getRecords(db, id) {
-    return db.collection("records").find({id: parseInt(id)}).toArray();
+    let {iD} = idAndYearToInt(id);
+    return db.collection("records").find({id: iD}).toArray()
+        .then(records => {
+            return recordsWithoutSalesmanId(records);
+        });
 }
 
 function recordsWithoutSalesmanId(records) {
     if (checkIfListEqualsZero(records)) {
         return [];
     } else {
-        return records.map(record => {
-            return new EvaluationRecord(record.EvaluationRecord.year, record.EvaluationRecord.entries);
-        });
+        return mapRecordsToNorm(records);
     }
 }
 
@@ -123,26 +155,26 @@ function checkIfListEqualsZero(list) {
     return list.length === 0;
 }
 
+function mapRecordsToNorm(records) {
+    return records.map(record => {
+        let evalRecord = record.EvaluationRecord;
+        return new EvaluationRecord(evalRecord.year, evalRecord.entries);
+    });
+}
+
 //delete
-async function deleteRecord(db, id, year) {
-    if (await checkIfThisRecordDontExist(db, id, year)) {
-        throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!");
-    } else {
-        await deleteRecordFromDb(db, id, year);
-    }
+function deleteRecord(db, id, year) {
+    return executeCheckForDbOperation(db, id, year, tryToDeleteRecordFromDb);
+}
+
+function tryToDeleteRecordFromDb(db, id, year, itExists) {
+    let message = "NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!";
+    return executeDbOperation(db, id, year, itExists, new NoElementFoundError(message), deleteRecordFromDb)
 }
 
 function deleteRecordFromDb(db, id, year) {
     return db.collection("records").deleteOne({
-        id: parseInt(id),
-        "EvaluationRecord.year": parseInt(year)
+        id: id,
+        "EvaluationRecord.year": year
     });
-}
-
-//used multiple times
-function checkIfThisRecordDontExist(db, id, year) {
-    return getTheRecordFromDb(db, id, year)
-        .then((record) => {
-            return record === null;
-        });
 }
