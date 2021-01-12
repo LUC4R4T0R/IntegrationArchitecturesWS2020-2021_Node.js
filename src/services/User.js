@@ -5,7 +5,7 @@ let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let helper_function = require('./Help');
 
 exports.createUser = async function (db, user) {
-    helper_function.checkIfParamIsUndefined(db, user, null, null);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, user, null, null);
 
     let userWithThisName = await db.collection("users").findOne({username: user.username});
     if (userWithThisName === null) {
@@ -22,7 +22,7 @@ exports.createUser = async function (db, user) {
 }
 
 exports.readUser = async function (db, username) {
-    helper_function.checkIfParamIsUndefined(db, username, null, null);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, username, null, null);
 
     if (username === undefined) { //all users
         let allUsers = await db.collection('users').find().toArray();
@@ -43,7 +43,7 @@ exports.readUser = async function (db, username) {
 }
 
 exports.updateUser = async function (db, user) {
-    helper_function.checkIfParamIsUndefined(db, user, null, null);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, user, null, null);
 
     let userWithThisName = await db.collection("users").findOne({username: user.username});
     if (userWithThisName === null) {
@@ -54,7 +54,7 @@ exports.updateUser = async function (db, user) {
 }
 
 exports.deleteUser = async function (db, username) {
-    helper_function.checkIfParamIsUndefined(db, username, null, null);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, username, null, null);
 
     let userWithThisName = await db.collection("users").findOne({username: username});
     if (userWithThisName === null) {
@@ -65,7 +65,7 @@ exports.deleteUser = async function (db, username) {
 }
 
 exports.verifyUser = async function (db, username, password) {
-    helper_function.checkIfParamIsUndefined(db, username, password, null);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, username, password, null);
 
     let userWithThisName = await db.collection("users").findOne({username: username});
     if (userWithThisName !== null) {
