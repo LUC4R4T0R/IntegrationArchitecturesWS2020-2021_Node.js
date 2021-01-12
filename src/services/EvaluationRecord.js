@@ -59,43 +59,6 @@ exports.deleteEvaluationRecord = async function (db, id, year) {
 };
 
 //-------------------------------------helper-------------------------------------------------------
-function executeCheckForDbOperation(db, id, year, func, entries){
-    let {iD, yeaR} = idAndYearToInt(id, year);
-    return checkIfThisRecordDontExist(db, iD, yeaR)
-        .then(recordDontExist => {
-            return func(db, iD, yeaR, recordDontExist, entries);
-        });
-}
-
-function idAndYearToInt(id, year = "0"){
-    return {
-        iD: parseInt(id),
-        yeaR: parseInt(year),
-    };
-}
-
-function checkIfThisRecordDontExist(db, id, year) {
-    return getTheRecord(db, id, year)
-        .then((record) => {
-            return record === null;
-        });
-}
-
-function getTheRecord(db, id, year) {
-    return db.collection("records").findOne({
-        id: id,
-        "EvaluationRecord.year": year
-    });
-}
-
-function executeDbOperation(db, id, year, exist, error, func, entries){
-    if (exist) {
-        throw error;
-    } else {
-        return func(db, id, year, entries);
-    }
-}
-
 //create
 function insertRecord(db, id, evaluationRecord) {
     return executeCheckForDbOperation(db, id, evaluationRecord.year, tryToInsertIntoDb, evaluationRecord.entries);
@@ -177,4 +140,42 @@ function deleteRecordFromDb(db, id, year) {
         id: id,
         "EvaluationRecord.year": year
     });
+}
+
+//used multiple times
+function executeCheckForDbOperation(db, id, year, func, entries){
+    let {iD, yeaR} = idAndYearToInt(id, year);
+    return checkIfThisRecordDontExist(db, iD, yeaR)
+        .then(recordDontExist => {
+            return func(db, iD, yeaR, recordDontExist, entries);
+        });
+}
+
+function idAndYearToInt(id, year = "0"){
+    return {
+        iD: parseInt(id),
+        yeaR: parseInt(year),
+    };
+}
+
+function checkIfThisRecordDontExist(db, id, year) {
+    return getTheRecord(db, id, year)
+        .then((record) => {
+            return record === null;
+        });
+}
+
+function getTheRecord(db, id, year) {
+    return db.collection("records").findOne({
+        id: id,
+        "EvaluationRecord.year": year
+    });
+}
+
+function executeDbOperation(db, id, year, exist, error, func, entries){
+    if (exist) {
+        throw error;
+    } else {
+        return func(db, id, year, entries);
+    }
 }
