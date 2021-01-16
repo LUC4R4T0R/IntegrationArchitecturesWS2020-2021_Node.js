@@ -99,7 +99,8 @@ class OpenCRXConnector {
         let ret = {
             salesman_id: id,
             year: year,
-            products: []
+            products: [],
+            remarks: "test"
         }
 
         //get the salsman
