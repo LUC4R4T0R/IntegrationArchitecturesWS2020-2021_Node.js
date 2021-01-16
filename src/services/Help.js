@@ -8,7 +8,7 @@ exports.checkIfOneOrMoreParamsAreUndefined = function (db, one, two, three) {
 }
 
 exports.checkForBadInput= function (id, year = "0",name="test") {
-    if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g) || !name.match(/^[\w]+$/g)) {
+    if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g) || !name.match(/^[\w ]+$/g)) {
         throw new BadInputError();
     }
 }
