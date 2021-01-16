@@ -127,7 +127,7 @@ class OpenCRXConnector {
                 let rating = orderCustomer.accountRating;
                 ret.products.push({
                     name: productName,
-                    quantity: quantity,
+                    quantity: parseInt(quantity),
                     customer: {
                         name: customerName,
                         rating: rating
