@@ -31,3 +31,16 @@ exports.addBonus = function (req, res) {
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
+
+exports.addRemark = function (req, res) {
+}
+
+exports.listOrders = function (req, res) {
+    auth_service.authenticated(req.session)
+        .then(() => {
+            return salesman_service.listOrders(req.params.id, req.params.year);
+        })
+        .then(result => {
+            res.send(result);
+        });
+}

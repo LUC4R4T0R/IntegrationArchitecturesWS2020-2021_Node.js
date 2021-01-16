@@ -1,6 +1,7 @@
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
 let Salesman = require('../models/Salesman');
+let OpenCRX = require('../connectors/OpenCRX');
 
 //add a bonus salary to a salesman
 exports.addBonus = async function (orange, id, year, amount) {
@@ -13,7 +14,7 @@ exports.addBonus = async function (orange, id, year, amount) {
         await orange.addBonusSalary(id, year, amount);
         return amount;
     }
-}
+};
 
 //read Salesman
 exports.readSalesman = async function (orange, id, queryString) {
@@ -31,3 +32,12 @@ exports.readSalesman = async function (orange, id, queryString) {
         }
     }
 };
+
+exports.addRemark = async function () {
+    return "";
+}
+
+exports.listOrders = async function (id, year) {
+    let open = new OpenCRX("https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel.","guest","guest");
+    return open.getAll(id, year);
+}
