@@ -166,6 +166,7 @@ function checkIfThisRecordDontExist(db, id, year) {
 }
 
 function getTheRecord(db, id, year) {
+
     return db.collection("records").findOne({
         id: id,
         "EvaluationRecord.year": year

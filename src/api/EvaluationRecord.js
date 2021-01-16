@@ -33,6 +33,9 @@ exports.find = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
+exports.addBonus = function (req, res){
+
+}
 
 exports.remove = function (req, res) {
     auth_service.authenticated(req.session)

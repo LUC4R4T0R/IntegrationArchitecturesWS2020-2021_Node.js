@@ -1,10 +1,10 @@
 {
-  "name": "IntegrationArchitecturesWS2020-2021_Node.js",
+  "name": "integration-architectures-ws2020-2021-node.js",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \\\\\\\"Error: no test/integration_test specified\\\\\\\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -16,15 +16,15 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "form-data": "^3.0.0",
-    "mocha": "^8.2.1",
     "mongodb": "^3.6.3",
     "multer": "^1.4.2",
-    "sinon": "^9.2.2",
-    "sinon-mongo": "^1.1.0",
     "swagger-ui-express": "^4.1.5",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "supertest": "^6.0.1"
+    "supertest": "^6.0.1",
+    "mocha": "^8.2.1",
+    "sinon": "^9.2.2",
+    "sinon-mongo": "^1.1.0"
   }
 }

@@ -17,7 +17,7 @@ exports.list = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            return evaluationRecordEntry_service.readEvaluationRecordEntry(db, req.params.id, req.params.year);
+            return evaluationRecordEntry_service.readAllEvaluationRecordEntry(db, req.params.id, req.params.year);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
@@ -27,7 +27,7 @@ exports.find = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            return evaluationRecordEntry_service.readEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
+            return evaluationRecordEntry_service.readOneEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
