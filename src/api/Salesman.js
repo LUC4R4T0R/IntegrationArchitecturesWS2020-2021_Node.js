@@ -1,5 +1,5 @@
 const salesman_service = require('../services/SalesmanService');
-const auth_service = require('../services/Authentication');
+const auth_service = require('../services/AuthenticationService');
 let OpenCRX = require('../connectors/OpenCRX');
 
 exports.addBonus = function (req, res) {

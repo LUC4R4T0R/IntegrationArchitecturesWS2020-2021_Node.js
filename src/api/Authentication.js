@@ -1,5 +1,5 @@
 const user_service = require('../services/User');
-const auth_service = require('../services/Authentication');
+const auth_service = require('../services/AuthenticationService');
 
 exports.isAuthenticated = function (req, res) {
     auth_service.authenticated(req.session).then(() => {

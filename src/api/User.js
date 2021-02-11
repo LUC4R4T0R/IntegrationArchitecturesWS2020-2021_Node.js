@@ -1,5 +1,5 @@
 const user_service = require('../services/User');
-const auth_service = require('../services/Authentication');
+const auth_service = require('../services/AuthenticationService');
 const User = require('../models/User');
 const BadInputError = require("../custom_errors/BadInputError");
 
