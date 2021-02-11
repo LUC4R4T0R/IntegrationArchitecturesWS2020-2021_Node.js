@@ -22,7 +22,7 @@ exports.createUser = async function (db, user) {
 }
 
 exports.readUser = async function (db, username) {
-    helper_function.checkIfOneOrMoreParamsAreUndefined(db, username, null, null);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, null, null, null);
 
     if (username === undefined) { //all users
         let allUsers = await db.collection('users').find().toArray();
@@ -30,7 +30,7 @@ exports.readUser = async function (db, username) {
             throw new NoElementFoundError('NoElementFoundError: No user was found!');
         } else {
             return allUsers.map((user) => {
-                return {displayname: allUsers.displayname, username: allUsers.username};
+                return {displayname: user.displayname, username: user.username};
             });
         }
     } else { // one user
