@@ -1,6 +1,5 @@
 let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let SalesmanService = require('../models/Salesman');
-let OpenCRX = require('../connectors/OpenCRX');
 let helper_function = require('./Help');
 
 /**
@@ -93,7 +92,6 @@ exports.addRemark = async function (db, id, year , remark) {
     }
 }
 
-exports.listOrders = async function (id, year) {
-    let open = new OpenCRX("https://sepp-crm.inf.h-brs.de/opencrx-rest-CRX/org.opencrx.kernel.","guest","guest");
-    return open.getAll(id, year);
+exports.listOrders = async function (open, id, year) {
+    return open.getReview(id, year);
 }

@@ -94,13 +94,13 @@ class OpenCRXConnector {
         }
     }
 
-    async getAll(id, year) {
+    async getReview(id, year) {
         //to return
-        let ret = {
+        let review = {
             salesman_id: id,
             year: year,
             products: [],
-            remarks: "test"
+            remarks: ""
         }
 
         //get the salsman
@@ -125,7 +125,7 @@ class OpenCRXConnector {
                 let quantity = orderProduct[j].quantityBackOrdered;
                 let customerName = orderCustomer.fullName;
                 let rating = orderCustomer.accountRating;
-                ret.products.push({
+                review.products.push({
                     name: productName,
                     quantity: parseInt(quantity),
                     customer: {
@@ -136,7 +136,7 @@ class OpenCRXConnector {
                 })
             }
         }
-        return ret;
+        return review;
     }
 }
 

@@ -1,5 +1,6 @@
 const salesman_service = require('../services/SalesmanService');
 const auth_service = require('../services/Authentication');
+let OpenCRX = require('../connectors/OpenCRX');
 
 exports.addBonus = function (req, res) {
     auth_service.authenticated(req.session)
@@ -45,7 +46,8 @@ exports.addRemark = function (req, res) {
 exports.listOrders = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
-            return salesman_service.listOrders(req.params.id, req.params.year);
+            let open = req.app.get('oCRX');
+            return salesman_service.listOrders(open, req.params.id, req.params.year);
         })
         .then(result => {
             res.send(result);
