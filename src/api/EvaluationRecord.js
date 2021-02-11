@@ -1,4 +1,4 @@
-const evaluationRecord_service = require('../services/EvaluationRecord');
+const evaluationRecord_service = require('../services/EvaluationRecordService');
 const auth_service = require('../services/Authentication');
 const EvaluationRecord = require('../models/EvaluationRecord');
 const BadInputError = require("../custom_errors/BadInputError");
@@ -13,7 +13,7 @@ exports.create = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-exports.list = function (req, res) {
+exports.getAll = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
@@ -23,7 +23,7 @@ exports.list = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-exports.find = function (req, res) {
+exports.getOne = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');

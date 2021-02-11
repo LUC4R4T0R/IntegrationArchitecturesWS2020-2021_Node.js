@@ -41,8 +41,8 @@ async function applyRouting(app, apiRouter) {
 
     // EvaluationRecord
     salesmanRouter.post('/:id/evaluationrecord', EvaluationRecord.create);
-    salesmanRouter.get('/:id/evaluationrecord', EvaluationRecord.list);
-    salesmanRouter.get('/:id/evaluationrecord/:year', EvaluationRecord.find);
+    salesmanRouter.get('/:id/evaluationrecord', EvaluationRecord.getAll);
+    salesmanRouter.get('/:id/evaluationrecord/:year', EvaluationRecord.getOne);
     //salesmanRouter.get('/:id/evaluationrecord/:year/get_bonus', EvaluationRecord.addBonus);
     salesmanRouter.delete('/:id/evaluationrecord/:year', EvaluationRecord.remove);
 
