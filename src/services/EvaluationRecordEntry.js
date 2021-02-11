@@ -1,4 +1,4 @@
-let evaluationRecord_service = require('./EvaluationRecord');
+let evaluationRecord_service = require('./EvaluationRecordService');
 let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
 let EvaluationRecordEntry = require('../models/EvaluationRecordEntry');

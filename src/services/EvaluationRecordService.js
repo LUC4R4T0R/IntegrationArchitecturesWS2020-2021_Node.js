@@ -59,7 +59,7 @@ exports.readOneEvaluationRecord = async function (db, id, year) {
     //check if the dbRecord is null or not - not null = continue; null = end
     let endOrContinue = dbRecord === null;
 
-    //message in case that the record no record with the given params exists
+    //message in case that no record with the given params exists
     let message = "NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!";
 
     //throw NoElementFoundError if record dont exists and continue if not
