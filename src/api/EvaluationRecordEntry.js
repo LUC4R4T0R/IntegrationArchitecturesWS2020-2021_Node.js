@@ -1,4 +1,4 @@
-const evaluationRecordEntry_service = require('../services/EvaluationRecordEntry');
+const evaluationRecordEntry_service = require('../services/EvaluationRecordEntryService');
 const auth_service = require('../services/AuthenticationService');
 const EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
 const BadInputError = require("../custom_errors/BadInputError");
