@@ -1,6 +1,8 @@
 const axios = require('axios');
 const FormData = require('form-data');
 const NoElementFoundError = require("../custom_errors/NoElementFoundError");
+const authDelay = 60000;
+const authTimeout = 1000;
 
 class OrangeHRMConnector{
 
@@ -18,22 +20,28 @@ class OrangeHRMConnector{
      * @returns {Promise<void>}
      */
     async getToken(){
-        try{
-            let request = await axios.post(
-                this.url+'/oauth/issueToken',
-                {
-                    'client_id':'api_oauth_id',
-                    'client_secret':'oauth_secret',
-                    'grant_type':'password',
-                    'username':this.username,
-                    'password':this.password
-                }
-            );
-            this.token = request.data.access_token;
-            this.expiration = Math.floor(Date.now() / 1000) + request.data.expires_in - 5; //expiration time minus 5 seconds for good measure
-            console.log('OrangeHRM | bearer-token obtained');
-        } catch (error){
-            console.error('ERROR OrangeHRM | obtaining bearer-token failed: ' + error);
+        if(this.lastAuth === undefined || this.lastAuth < Date.now() - authDelay){
+            try{
+                let request = await axios.post(
+                    this.url+'/oauth/issueToken',
+                    {
+                        'client_id':'api_oauth_id',
+                        'client_secret':'oauth_secret',
+                        'grant_type':'password',
+                        'username':this.username,
+                        'password':this.password
+                    },
+                    {
+                        timeout: authTimeout
+                    }
+                );
+                this.token = request.data.access_token;
+                this.expiration = Math.floor(Date.now() / 1000) + request.data.expires_in - 5; //expiration time minus 5 seconds for good measure
+                console.log('OrangeHRM | bearer-token obtained');
+            } catch (error){
+                console.error('ERROR OrangeHRM | obtaining bearer-token failed: ' + error);
+            }
+            this.lastAuth = Date.now();
         }
     }
 
@@ -137,11 +145,15 @@ class OrangeHRMConnector{
     }
 
     /**
-     * checks if the Bearer-Token is still valid and requests a new one if necessary
+     * checks if the Bearer-Token has been obtained or is still valid and requests a new one if necessary
      */
     async expirationCheck(){
-        if(this.expiration <= Math.floor(Date.now() / 1000)){
+        if(this.token === undefined){
             await this.getToken();
+        }else{
+            if(this.expiration <= Math.floor(Date.now() / 1000)){
+                await this.getToken();
+            }
         }
     }
 }
