@@ -33,16 +33,16 @@ async function applyRouting(app, apiRouter) {
 
     // Salesman
     salesmanRouter.post('', Salesman.addBonus);
-    salesmanRouter.get('', Salesman.getAll);
-    salesmanRouter.get('/:id', Salesman.getOne);
+    salesmanRouter.get('', Salesman.list);
+    salesmanRouter.get('/:id', Salesman.find);
     salesmanRouter.get('/:id/bonus/:year/get_review',Salesman.listOrders);
-    salesmanRouter.get('/:id/bonus/:year/set_remarks',Salesman.addRemark);
+    salesmanRouter.post('/:id/bonus/:year/set_remarks',Salesman.addRemark);
 
 
     // EvaluationRecord
     salesmanRouter.post('/:id/evaluationrecord', EvaluationRecord.create);
-    salesmanRouter.get('/:id/evaluationrecord', EvaluationRecord.getAll);
-    salesmanRouter.get('/:id/evaluationrecord/:year', EvaluationRecord.getOne);
+    salesmanRouter.get('/:id/evaluationrecord', EvaluationRecord.list);
+    salesmanRouter.get('/:id/evaluationrecord/:year', EvaluationRecord.find);
     //salesmanRouter.get('/:id/evaluationrecord/:year/get_bonus', EvaluationRecord.addBonus);
     salesmanRouter.delete('/:id/evaluationrecord/:year', EvaluationRecord.remove);
 

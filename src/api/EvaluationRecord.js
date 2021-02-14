@@ -13,7 +13,7 @@ exports.create = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-exports.getAll = function (req, res) {
+exports.list = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
@@ -23,7 +23,7 @@ exports.getAll = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-exports.getOne = function (req, res) {
+exports.find = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');

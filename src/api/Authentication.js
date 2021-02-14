@@ -1,4 +1,4 @@
-const user_service = require('../services/User');
+const user_service = require('../services/UserService');
 const auth_service = require('../services/AuthenticationService');
 
 exports.isAuthenticated = function (req, res) {
