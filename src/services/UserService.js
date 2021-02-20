@@ -119,7 +119,7 @@ exports.updateUser = async function (db, user) {
     if (!userWithThisName) {
         throw new NoElementFoundError('NoElementFoundError: There is no user with this username!');
     } else {
-        await db.collection('users').findOneAndUpdate({username: user.username}, {"$set": {displayname: user.displayname}});
+        await db.collection('users').findOneAndUpdate({username: user.username}, {"$set": {displayname: user.displayname, employeeId: user.employeeId, group: user.group}});
     }
 }
 
