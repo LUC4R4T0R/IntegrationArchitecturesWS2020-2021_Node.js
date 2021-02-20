@@ -111,5 +111,11 @@ exports.renewOrder = async function (open, id, year, db) {
 }
 
 exports.getOrder = async function (open, id, year, db){
-    return db.collection("review").findOne({salesman_id: id, year: year});
+    let review = await db.collection("review").findOne({salesman_id: id, year: year});
+
+    if (review){
+        return review;
+    } else {
+        return this.renewOrder(open, id, year, db);
+    }
 }
