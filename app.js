@@ -19,7 +19,7 @@ const remoteState = remoteConnectors.initRemoteConnectors(app,config);
 
 //initialize database connection
 const mongoDB = require('./src/app_init/mongoDB');
-const dbState = mongoDB.connectMongoDB(app,config)
+const dbState = mongoDB.initMongoDB(app,config)
     .then(_=> expressControl.startServer(app, config));
 
 //load routing from app_init

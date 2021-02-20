@@ -10,6 +10,7 @@ async function applyRouting(app, apiRouter) {
     const Salesman = require('../api/Salesman');
     const EvaluationRecord = require('../api/EvaluationRecord');
     const EvaluationRecordEntry = require('../api/EvaluationRecordEntry');
+    const Settings = require('../api/SettingsApi');
 
     //extended routes
     const authRouter = express.Router();
@@ -18,6 +19,8 @@ async function applyRouting(app, apiRouter) {
     apiRouter.use('/user', userRouter);
     const salesmanRouter = express.Router();
     apiRouter.use('/salesman', salesmanRouter);
+    const settingsRouter = express.Router();
+    apiRouter.use('/settings', settingsRouter);
 
     // auth
     authRouter.post('', Authentication.authenticate);
@@ -30,6 +33,10 @@ async function applyRouting(app, apiRouter) {
     userRouter.get('/:username', User.find);
     userRouter.put('', User.update);
     userRouter.delete('/:username', User.remove);
+
+    // Settings
+    settingsRouter.get('/:name', Settings.getSetting);
+    settingsRouter.put('', Settings.setSetting);
 
     // Salesman
     salesmanRouter.post('', Salesman.addBonus);
