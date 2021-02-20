@@ -3,7 +3,7 @@ const auth_service = require('../services/AuthenticationService');
 let OpenCRX = require('../connectors/OpenCRX');
 
 exports.addBonus = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let orange = req.app.get('oHRM');
             return salesman_service.addBonus(orange, req.params.id, req.params.year, req.params.amount);
@@ -14,7 +14,7 @@ exports.addBonus = function (req, res) {
 }
 
 exports.list = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let orange = req.app.get('oHRM');
             return salesman_service.readAllSalesman(orange);
@@ -24,7 +24,7 @@ exports.list = function (req, res) {
 }
 
 exports.find = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let orange = req.app.get('oHRM');
             return salesman_service.readOneSalesman(orange, req.params.id);
@@ -34,7 +34,7 @@ exports.find = function (req, res) {
 }
 
 exports.addRemark = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 3)
         .then(() => {
             let db = req.app.get('db');
             return salesman_service.addRemark(db, req.params.id, req.params.year, req.body.remarks)
@@ -44,7 +44,7 @@ exports.addRemark = function (req, res) {
 }
 
 exports.listOrders = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let open = req.app.get('oCRX');
             return salesman_service.listOrders(open, req.params.id, req.params.year);

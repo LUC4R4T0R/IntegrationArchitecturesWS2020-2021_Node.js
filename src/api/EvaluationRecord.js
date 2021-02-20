@@ -4,7 +4,7 @@ const EvaluationRecord = require('../models/EvaluationRecord');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecord_service.createEvaluationRecord(db, req.params.id, inputFilter(req.body));
@@ -14,7 +14,7 @@ exports.create = function (req, res) {
 }
 
 exports.list = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecord_service.readAllEvaluationRecords(db, req.params.id);
@@ -24,7 +24,7 @@ exports.list = function (req, res) {
 }
 
 exports.find = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecord_service.readOneEvaluationRecord(db, req.params.id, req.params.year);
@@ -33,12 +33,8 @@ exports.find = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-exports.addBonus = function (req, res){
-
-}
-
 exports.remove = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecord_service.deleteEvaluationRecord(db, req.params.id, req.params.year);

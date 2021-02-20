@@ -4,7 +4,7 @@ const EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.createEvaluationRecordEntry(db, req.params.id, req.params.year, inputFilter(req.body));
@@ -14,7 +14,7 @@ exports.create = function (req, res) {
 }
 
 exports.list = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.readAllEvaluationRecordEntries(db, req.params.id, req.params.year);
@@ -24,7 +24,7 @@ exports.list = function (req, res) {
 }
 
 exports.find = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.readOneEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
@@ -35,7 +35,7 @@ exports.find = function (req, res) {
 }
 
 exports.update = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.updateEvaluationRecordEntry(db, req.params.id, req.params.year, inputFilter(req.body));
@@ -45,7 +45,7 @@ exports.update = function (req, res) {
 }
 
 exports.remove = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.deleteEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);

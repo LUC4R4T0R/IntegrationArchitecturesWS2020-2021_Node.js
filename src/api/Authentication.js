@@ -13,7 +13,7 @@ exports.authenticate = function (req, res) {
     let db = req.app.get('db');
     user_service.verifyUser(db, req.body.username, req.body.password)
         .then(() => {
-            auth_service.authenticate(req.session, req.body.username);
+            auth_service.authenticate(req.session, req.body.username, req.body.group);
             res.send('success');
         })
         .catch((error) => res.status(error.statusCode).send(error.message));

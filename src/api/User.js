@@ -4,7 +4,7 @@ const User = require('../models/User');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return user_service.createUser(db, inputFilter(req.body));
@@ -15,7 +15,7 @@ exports.create = function (req, res) {
 
 
 exports.list = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return user_service.readAllUsers(db);
@@ -25,7 +25,7 @@ exports.list = function (req, res) {
 }
 
 exports.find = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
             if (parseInt(req.params.username) === -1){
@@ -40,7 +40,7 @@ exports.find = function (req, res) {
 //updatePW
 
 exports.update = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return user_service.updateUser(db, inputFilter(req.body));
@@ -50,7 +50,7 @@ exports.update = function (req, res) {
 }
 
 exports.remove = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return user_service.deleteUser(db, req.params.username);
