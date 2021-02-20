@@ -14,7 +14,7 @@ exports.authenticated = async function (session) {
 }
 
 /**
- * This method authenticates an user.
+ * This method authenticates a user.
  *
  * @param session the session of the user
  * @param username the username
@@ -25,7 +25,7 @@ exports.authenticate = function (session , username) {
 }
 
 /**
- * This method deAuthenticates an user.
+ * This method deAuthenticates a user.
  *
  * @param session the session of the user
  */

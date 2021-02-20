@@ -19,7 +19,6 @@ exports.addBonus = async function (orange, id, year, amount) {
 
     //add the bonus via the OrangeHRM connector function
     await orange.addBonusSalary(id, year, amount);
-    return amount;
 };
 
 /**
@@ -69,7 +68,7 @@ exports.readOneSalesman = async function (orange, id) {
  * @param remark the remark for the salesman
  * @returns {Promise<String>} This method returns the remark.
  */
-exports.addRemark = async function (db, id, year , remark) {
+exports.addRemark = async function (db, id, year, remark) {
     //check for wrong or missing inputs
     helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, year, remark);
     helper_function.checkForBadInput(id, year, remark);
@@ -88,7 +87,6 @@ exports.addRemark = async function (db, id, year , remark) {
         throw new NoElementFoundError(message);
     } else {
         await db.collection("review").updateOne({salesman_id: id, year: year}, {$set: {remarks : remark}});
-        return remark;
     }
 }
 

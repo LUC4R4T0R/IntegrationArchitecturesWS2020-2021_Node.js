@@ -47,7 +47,7 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationRe
  * @param year the year of the record-entries
  * @returns {Promise<[EvaluationRecordEntry]>} This method returns all record-entries of one record.
  */
-exports.readAllEvaluationRecordEntry = async function (db, id, year) {
+exports.readAllEvaluationRecordEntries = async function (db, id, year) {
     //check for wrong or missing inputs
     helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, year, null);
     helper_function.checkForBadInput(id);
@@ -108,6 +108,7 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationRe
     let entries = await getAllEntriesOfThisSalesmanInThisYear(db, id, year);
 
     //change the entry
+    //TODO
     let changed = false;
     entries = entries.map(x => {
         if (x.name === evaluationRecordEntry.name) {

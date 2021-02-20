@@ -32,7 +32,7 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
     if (continueOrEnd) {
         throw new ElementDuplicateError(message);
     } else {
-        return db.collection("records").insertOne({id: iD, EvaluationRecord: new EvaluationRecordService(evaluationRecord.year, evaluationRecord.entries)});
+        await db.collection("records").insertOne({id: iD, EvaluationRecord: new EvaluationRecordService(evaluationRecord.year, evaluationRecord.entries)});
     }
 };
 
@@ -78,7 +78,7 @@ exports.readOneEvaluationRecord = async function (db, id, year) {
  * @param id the id of the salesman we want the record of
  * @returns {Promise<[EvaluationRecord]>} This method returns all records with the given specs.
  */
-exports.readAllEvaluationRecord = async function (db, id) {
+exports.readAllEvaluationRecords = async function (db, id) {
     //check for wrong or missing inputs
     helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, null, null);
     helper_function.checkForBadInput(id);
@@ -129,7 +129,7 @@ exports.deleteEvaluationRecord = async function (db, id, year) {
     if (endOrContinue) {
         throw new NoElementFoundError(message);
     } else {
-        return db.collection("records").deleteOne({id: iD, "EvaluationRecord.year": yeaR});
+        await db.collection("records").deleteOne({id: iD, "EvaluationRecord.year": yeaR});
     }
 };
 

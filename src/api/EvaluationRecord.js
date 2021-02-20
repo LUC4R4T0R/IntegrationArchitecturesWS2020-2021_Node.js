@@ -17,7 +17,7 @@ exports.list = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            return evaluationRecord_service.readAllEvaluationRecord(db, req.params.id);
+            return evaluationRecord_service.readAllEvaluationRecords(db, req.params.id);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
