@@ -100,6 +100,10 @@ class OpenCRXConnector {
             salesman_id: id,
             year: year,
             products: [],
+            performance: [],
+            hrApproved: false,
+            ceoApproved: false,
+            salesmanApproved: false,
             remarks: ""
         }
 
@@ -132,7 +136,7 @@ class OpenCRXConnector {
                         name: customerName,
                         rating: rating
                     },
-                    bonus: 1000
+                    bonus: 0
                 })
             }
         }

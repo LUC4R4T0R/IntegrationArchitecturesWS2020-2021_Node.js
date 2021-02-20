@@ -90,6 +90,26 @@ exports.addRemark = async function (db, id, year, remark) {
     }
 }
 
-exports.listOrders = async function (open, id, year) {
+exports.renewOrder = async function (open, id, year, db) {
+    let review = await db.collection("review").findOne({salesman_id: id, year: year});
+
+    let performance = await db.collection('records').findOne({id: parseInt(id), 'EvaluationRecord.year': parseInt(year)});
+    let entries = [];
+    if(performance){
+        console.log(performance.EvaluationRecord.entries);
+        entries = performance.EvaluationRecord.entries;
+        if (!entries) {
+            entries = [];
+        }
+    }
+
+    if (!review){
+        await db.collection("review").insertOne(await open.getReview(id, year));
+    }
+    await db.collection("review").updateOne({salesman_id: id, year: year}, {$set: {performance : entries}});
     return open.getReview(id, year);
+}
+
+exports.getOrder = async function (open, id, year, db){
+    return db.collection("review").findOne({salesman_id: id, year: year});
 }

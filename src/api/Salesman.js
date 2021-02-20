@@ -24,7 +24,7 @@ exports.list = function (req, res) {
 }
 
 exports.find = function (req, res) {
-    auth_service.authenticated(req.session, 2)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let orange = req.app.get('oHRM');
             return salesman_service.readOneSalesman(orange, req.params.id);
@@ -43,11 +43,23 @@ exports.addRemark = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-exports.listOrders = function (req, res) {
+exports.renewOrder = function (req, res) {
     auth_service.authenticated(req.session, 2)
         .then(() => {
+            let db = req.app.get('db');
             let open = req.app.get('oCRX');
-            return salesman_service.listOrders(open, req.params.id, req.params.year);
+            return salesman_service.renewOrder(open, req.params.id, req.params.year, db);
+        })
+        .then(result => {
+            res.send(result);
+        });
+}
+
+exports.getOrder = function (req, res) {
+    auth_service.authenticated(req.session, 2)
+        .then(() => {
+            let db = req.app.get('db');
+            return salesman_service.getOrder(req.params.id, req.params.year, db);
         })
         .then(result => {
             res.send(result);
