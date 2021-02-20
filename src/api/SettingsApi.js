@@ -2,7 +2,7 @@ const auth_service = require('../services/AuthenticationService');
 const settings_service = require('../services/SettingsService');
 
 exports.getSetting = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 0)
         .then(() => {
             let db = req.app.get('db');
             return settings_service.getSetting(db, req.params.name);
@@ -12,7 +12,7 @@ exports.getSetting = function (req, res) {
 }
 
 exports.setSetting = function (req, res) {
-    auth_service.authenticated(req.session)
+    auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
             return settings_service.setSetting(db, req.body);
