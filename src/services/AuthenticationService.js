@@ -6,7 +6,7 @@ let NotAuthenticatedError = require('../custom_errors/NotAuthenticatedError');
  * @param session the session of the user
  * @returns {Promise<void>} This methods returns nothing.
  */
-exports.authenticated = async function (session, minGroup) {
+exports.authenticated = async function (session, minGroup = 0) {
     if (session !== undefined && session.loggedIn && minGroup <= session.group) {
         return;
     }
@@ -19,10 +19,10 @@ exports.authenticated = async function (session, minGroup) {
  * @param session the session of the user
  * @param username the username
  */
-exports.authenticate = function (session , username, group) {
+exports.authenticate = async function (db, session , username) {
     session.user = username;
     session.loggedIn = true;
-    session.group = group;
+    session.group = (await db.collection('users').findOne({username: username})).group;
 }
 
 /**

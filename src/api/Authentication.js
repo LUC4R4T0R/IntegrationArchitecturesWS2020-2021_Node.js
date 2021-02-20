@@ -12,8 +12,8 @@ exports.isAuthenticated = function (req, res) {
 exports.authenticate = function (req, res) {
     let db = req.app.get('db');
     user_service.verifyUser(db, req.body.username, req.body.password)
-        .then(() => {
-            auth_service.authenticate(req.session, req.body.username, req.body.group);
+        .then(async () => {
+            await auth_service.authenticate(db, req.session, req.body.username);
             res.send('success');
         })
         .catch((error) => res.status(error.statusCode).send(error.message));
