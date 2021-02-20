@@ -107,7 +107,7 @@ exports.renewOrder = async function (open, id, year, db) {
         await db.collection("review").insertOne(await open.getReview(id, year));
     }
     await db.collection("review").updateOne({salesman_id: id, year: year}, {$set: {performance : entries}});
-    return open.getReview(id, year);
+    return db.collection("review").findOne({salesman_id: id, year: year});
 }
 
 exports.getOrder = async function (open, id, year, db){
