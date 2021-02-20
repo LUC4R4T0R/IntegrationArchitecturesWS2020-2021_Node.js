@@ -59,7 +59,8 @@ exports.getOrder = function (req, res) {
     auth_service.authenticated(req.session, 2)
         .then(() => {
             let db = req.app.get('db');
-            return salesman_service.getOrder(req.params.id, req.params.year, db);
+            let open = req.app.get('oCRX');
+            return salesman_service.getOrder(open, req.params.id, req.params.year, db);
         })
         .then(result => {
             res.send(result);
