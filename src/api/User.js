@@ -1,4 +1,4 @@
-const user_service = require('../services/User');
+const user_service = require('../services/UserService');
 const auth_service = require('../services/AuthenticationService');
 const User = require('../models/User');
 const BadInputError = require("../custom_errors/BadInputError");
@@ -18,7 +18,7 @@ exports.list = function (req, res) {
     auth_service.authenticated(req.session)
         .then(() => {
             let db = req.app.get('db');
-            return user_service.readUser(db);
+            return user_service.readAllUsers(db);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
@@ -29,13 +29,15 @@ exports.find = function (req, res) {
         .then(() => {
             let db = req.app.get('db');
             if (parseInt(req.params.username) === -1){
-                return user_service.readUser(db, req.session.user);
+                return user_service.readOneUser(db, req.session.user);
             }
-            return user_service.readUser(db, req.params.username);
+            return user_service.readOneUser(db, req.params.username);
         })
         .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
+
+//updatePW
 
 exports.update = function (req, res) {
     auth_service.authenticated(req.session)
@@ -60,7 +62,7 @@ exports.remove = function (req, res) {
 
 function inputFilter(user) {
     try{
-        return new User(user.displayname, user.username, user.password);
+        return new User(user.displayname, user.username, user.password, user.group, user.employeeId);
     }catch(e){
         throw new BadInputError('The given record does not match the model of an record!');
     }
