@@ -102,7 +102,7 @@ class OpenCRXConnector {
             products: [],
             performance: [],
             hrApproved: false,
-            ceoApproved: false,
+            managementApproved: false,
             salesmanApproved: false,
             remarks: ""
         }

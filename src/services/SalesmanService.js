@@ -144,6 +144,6 @@ exports.approve = async function(db, id, year, group){
     } else if(grouP === 2){
         await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {hrApproved: true}});
     } else {
-        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {ceoApproved: true}});
+        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {managementApproved: true}});
     }
 }
