@@ -91,7 +91,7 @@ exports.addRemark = async function (db, id, year, remark) {
 }
 
 exports.renewOrder = async function (open, id, year, db) {
-    let review = await db.collection("review").findOne({salesman_id: id, year: year});
+    let review = await db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
 
     let f = await db.collection('settings').findOne({name: "socialBonusFactor"});
     let b = await db.collection('settings').findOne({name: "socialBonusBase"});
@@ -119,12 +119,12 @@ exports.renewOrder = async function (open, id, year, db) {
     if (!review){
         await db.collection("review").insertOne(await open.getReview(id, year, db));
     }
-    await db.collection("review").updateOne({salesman_id: id, year: year}, {$set: {performance : newEntries}});
-    return db.collection("review").findOne({salesman_id: id, year: year});
+    await db.collection("review").updateOne({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {performance : newEntries}});
+    return db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
 }
 
 exports.getOrder = async function (open, id, year, db){
-    let review = await db.collection("review").findOne({salesman_id: id, year: year});
+    let review = await db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
 
     if (review){
         return review;
