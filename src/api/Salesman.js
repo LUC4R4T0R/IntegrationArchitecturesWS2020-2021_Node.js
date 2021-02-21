@@ -56,7 +56,7 @@ exports.renewOrder = function (req, res) {
 }
 
 exports.getOrder = function (req, res) {
-    auth_service.authenticated(req.session, 2)
+    auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
             let open = req.app.get('oCRX');
