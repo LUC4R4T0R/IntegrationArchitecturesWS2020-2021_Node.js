@@ -94,7 +94,7 @@ class OpenCRXConnector {
         }
     }
 
-    async getReview(id, year) {
+    async getReview(id, year, db) {
         //to return
         let review = {
             salesman_id: id,
@@ -126,21 +126,41 @@ class OpenCRXConnector {
             //in case of more then one product per customer
             for (let j = 0; j < orderProduct.length; j++) {
                 let productName = (await this.getProduct(orderProduct[j].product["@href"])).name;
-                let quantity = orderProduct[j].quantityBackOrdered;
+                let quantity = orderProduct[j].quantity;
                 let customerName = orderCustomer.fullName;
                 let rating = orderCustomer.accountRating;
+                let value = parseFloat(orderProduct[j].pricePerUnit);
                 review.products.push({
                     name: productName,
                     quantity: parseInt(quantity),
+                    value: value,
                     customer: {
                         name: customerName,
                         rating: rating
                     },
-                    bonus: 0
+                    bonus: await this.calculateBonus(db, quantity, rating, value)
                 })
             }
         }
         return review;
+    }
+
+    async calculateBonus(db, a, r, p){
+        let f = await db.collection('settings').findOne({name: "salesBonusFactor"});
+        let b = await db.collection('settings').findOne({name: "salesBonusBase"});
+        let rr = await db.collection('settings').findOne({name: "customerRatingFactor" + r});
+        return f.value * p * a * rr.value * 100 + b.value;
+    }
+
+    async getYearsOfOrders(id){
+        //get the salsman
+        let salesman = await this.getUserByGovernmentId(id);
+        //get the openCRX intern id
+        let openCRXID = salesman.externalLink._item[0].$.replace('VCARD:', '');
+        //get all orders
+        let orders = await this.getSalesOrderByAccountId("xri://@openmdx*org.opencrx.kernel.account1/provider/CRX/segment/Standard/account/" + openCRXID);
+
+        let years = new Set(orders.map(x => x.activeOn.substr(0, 4)));
     }
 }
 

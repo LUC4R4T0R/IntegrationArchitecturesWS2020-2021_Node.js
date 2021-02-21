@@ -66,3 +66,14 @@ exports.getOrder = function (req, res) {
             res.send(result);
         });
 }
+
+exports.getYearsOfOrders = function (req, res) {
+    auth_service.authenticated(req.session, 1)
+        .then(() => {
+            let open = req.app.get('oCRX');
+            return salesman_service.getYearsOfOrders(open, req.params.id);
+        })
+        .then(result => {
+            res.send(result);
+        });
+}
