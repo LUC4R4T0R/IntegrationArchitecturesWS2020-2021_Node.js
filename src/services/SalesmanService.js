@@ -134,5 +134,5 @@ exports.getOrder = async function (open, id, year, db){
 }
 
 exports.getYearsOfOrders = async function(open, id){
-    return open.getReview(id);
+    return open.getYearsOfOrders(id);
 }
