@@ -97,8 +97,8 @@ class OpenCRXConnector {
     async getReview(id, year, db) {
         //to return
         let review = {
-            salesman_id: id,
-            year: year,
+            salesman_id: parseInt(id),
+            year: parseInt(year),
             products: [],
             performance: [],
             hrApproved: false,

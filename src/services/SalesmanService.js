@@ -110,7 +110,7 @@ exports.renewOrder = async function (open, id, year, db) {
                     name: e.name,
                     target: e.target,
                     actual: e.actual,
-                    bonus: (f.value * e.actual / e.target + b.value)
+                    bonus: (f.value * 100 * e.actual / e.target + b.value * 100)
                 });
             });
         }
