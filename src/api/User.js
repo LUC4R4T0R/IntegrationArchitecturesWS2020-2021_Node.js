@@ -25,7 +25,7 @@ exports.list = function (req, res) {
 }
 
 exports.find = function (req, res) {
-    auth_service.authenticated(req.session, 1)
+    auth_service.authenticated(req.session, 0)
         .then(() => {
             let db = req.app.get('db');
             if (parseInt(req.params.username) === -1){
