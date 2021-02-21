@@ -161,7 +161,7 @@ class OpenCRXConnector {
             //get all orders
             let orders = await this.getSalesOrderByAccountId("xri://@openmdx*org.opencrx.kernel.account1/provider/CRX/segment/Standard/account/" + openCRXID);
 
-            return Array.from(new Set(orders.map(x => x.activeOn.substr(0, 4))));
+            return Array.from(new Set(orders.map(x => parseInt(x.activeOn.substr(0, 4)))));
         }else{
             console.error('ERROR OpenCRX | something has gone wrong while getting years.');
             return undefined;

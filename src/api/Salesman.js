@@ -77,3 +77,14 @@ exports.getYearsOfOrders = function (req, res) {
             res.send(result);
         });
 }
+
+exports.approve = function (req, res) {
+    auth_service.authenticated(req.session, 1)
+        .then(() => {
+            let db = req.app.get('db');
+            return salesman_service.approve(db, req.params.id, req.params.year, req.session.group);
+        })
+        .then(result => {
+            res.send(result);
+        });
+}

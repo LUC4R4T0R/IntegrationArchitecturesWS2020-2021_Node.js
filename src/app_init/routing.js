@@ -46,6 +46,7 @@ async function applyRouting(app, apiRouter) {
     salesmanRouter.get('/:id/bonus/:year/get_review',Salesman.getOrder);
     salesmanRouter.post('/:id/bonus/:year/set_remarks',Salesman.addRemark);
     salesmanRouter.get('/:id/bonus/get_years',Salesman.getYearsOfOrders);
+    salesmanRouter.post('/:id/bonus/:year/approve_bonus',Salesman.approve);
 
 
     // EvaluationRecord

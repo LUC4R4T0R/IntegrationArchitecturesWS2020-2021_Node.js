@@ -74,7 +74,7 @@ exports.addRemark = async function (db, id, year, remark) {
     helper_function.checkForBadInput(id, year, remark);
 
     //try to get the order from db
-    let orderDb = db.collection("review").findOne({salesman_id: id, year: year});
+    let orderDb = db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
 
     //check if the dbOrder is null or not - not null = continue; null = end
     let endOrContinue = orderDb === null;
@@ -86,7 +86,7 @@ exports.addRemark = async function (db, id, year, remark) {
     if (endOrContinue) {
         throw new NoElementFoundError(message);
     } else {
-        await db.collection("review").updateOne({salesman_id: id, year: year}, {$set: {remarks : remark}});
+        await db.collection("review").updateOne({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {remarks : remark}});
     }
 }
 
@@ -135,4 +135,15 @@ exports.getOrder = async function (open, id, year, db){
 
 exports.getYearsOfOrders = async function(open, id){
     return open.getYearsOfOrders(id);
+}
+
+exports.approve = async function(db, id, year, group){
+    let grouP = parseInt(group);
+    if (grouP === 1){
+        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {salesmanApproved: true}});
+    } else if(grouP === 2){
+        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {hrApproved: true}});
+    } else {
+        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {ceoApproved: true}});
+    }
 }
