@@ -4,6 +4,7 @@ let NotAuthenticatedError = require('../custom_errors/NotAuthenticatedError');
  * This method checks if someone is authenticated.
  *
  * @param session the session of the user
+ * @param minGroup the minimal required group
  * @returns {Promise<void>} This methods returns nothing.
  */
 exports.authenticated = async function (session, minGroup = 0) {
@@ -16,6 +17,7 @@ exports.authenticated = async function (session, minGroup = 0) {
 /**
  * This method authenticates a user.
  *
+ * @param db the database
  * @param session the session of the user
  * @param username the username
  */
