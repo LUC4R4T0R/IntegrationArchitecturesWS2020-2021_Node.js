@@ -5,11 +5,11 @@ async function applyRouting(app, apiRouter) {
     app.use('/api', apiRouter);
 
     //loading local apis
-    const Authentication = require('../api/Authentication');
-    const User = require('../api/User');
-    const Salesman = require('../api/Salesman');
-    const EvaluationRecord = require('../api/EvaluationRecord');
-    const EvaluationRecordEntry = require('../api/EvaluationRecordEntry');
+    const Authentication = require('../api/AuthenticationApi');
+    const User = require('../api/UserApi');
+    const Salesman = require('../api/SalesmanApi');
+    const EvaluationRecord = require('../api/EvaluationRecordApi');
+    const EvaluationRecordEntry = require('../api/EvaluationRecordEntryApi');
     const Settings = require('../api/SettingsApi');
 
     //extended routes
@@ -32,6 +32,7 @@ async function applyRouting(app, apiRouter) {
     userRouter.get('', User.list);
     userRouter.get('/:username', User.find);
     userRouter.put('', User.update);
+    userRouter.put('/:username/pw', User.updatePw)
     userRouter.delete('/:username', User.remove);
 
     // Settings
@@ -39,7 +40,6 @@ async function applyRouting(app, apiRouter) {
     settingsRouter.put('', Settings.setSetting);
 
     // Salesman
-    salesmanRouter.post('', Salesman.addBonus);
     salesmanRouter.get('', Salesman.list);
     salesmanRouter.get('/:id', Salesman.find);
     salesmanRouter.get('/:id/bonus/:year/refresh_review',Salesman.renewOrder);
@@ -47,7 +47,6 @@ async function applyRouting(app, apiRouter) {
     salesmanRouter.post('/:id/bonus/:year/set_remarks',Salesman.addRemark);
     salesmanRouter.get('/:id/bonus/get_years',Salesman.getYearsOfOrders);
     salesmanRouter.post('/:id/bonus/:year/approve_bonus',Salesman.approve);
-
 
     // EvaluationRecord
     salesmanRouter.post('/:id/evaluationrecord', EvaluationRecord.create);
