@@ -205,7 +205,7 @@ exports.getOrder = async function (open, id, year, db) {
  */
 exports.getYearsOfOrders = async function (open, id) {
     //check for wrong or missing inputs
-    helper_function.checkIfOneOrMoreParamsAreUndefined(open, id);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(open, id, null, null);
 
     return open.getYearsOfOrders(id);
 }

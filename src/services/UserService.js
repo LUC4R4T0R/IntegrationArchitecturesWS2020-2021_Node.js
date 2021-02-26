@@ -152,7 +152,7 @@ exports.updateUserPW = async function (db, username, oldPw, newPw) {
         if (await bcrypt.compare(oldPw, userWithThisName.password)) {
             await db.collection('users').findOneAndUpdate(
                 {username: username},
-                {"$set": {password: newPw}});
+                {"$set": {password: await bcrypt.hash(newPw, 10)}});
         } else {
             throw new BadCredentialsError();
         }
