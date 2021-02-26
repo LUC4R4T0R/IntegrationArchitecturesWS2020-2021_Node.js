@@ -1,17 +1,5 @@
 const salesman_service = require('../services/SalesmanService');
 const auth_service = require('../services/AuthenticationService');
-let OpenCRX = require('../connectors/OpenCRX');
-
-exports.addBonus = function (req, res) {
-    auth_service.authenticated(req.session, 2)
-        .then(() => {
-            let orange = req.app.get('oHRM');
-            return salesman_service.addBonus(orange, req.params.id, req.params.year, req.params.amount);
-        })
-
-        .then(result => res.send(result))
-        .catch((error) => res.status(error.statusCode).send(error.message));
-}
 
 exports.list = function (req, res) {
     auth_service.authenticated(req.session, 2)
@@ -50,9 +38,8 @@ exports.renewOrder = function (req, res) {
             let open = req.app.get('oCRX');
             return salesman_service.renewOrder(open, req.params.id, req.params.year, db);
         })
-        .then(result => {
-            res.send(result);
-        });
+        .then(result => res.send(result))
+        .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
 exports.getOrder = function (req, res) {
@@ -62,9 +49,8 @@ exports.getOrder = function (req, res) {
             let open = req.app.get('oCRX');
             return salesman_service.getOrder(open, req.params.id, req.params.year, db);
         })
-        .then(result => {
-            res.send(result);
-        });
+        .then(result => res.send(result))
+        .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
 exports.getYearsOfOrders = function (req, res) {
@@ -73,18 +59,17 @@ exports.getYearsOfOrders = function (req, res) {
             let open = req.app.get('oCRX');
             return salesman_service.getYearsOfOrders(open, req.params.id);
         })
-        .then(result => {
-            res.send(result);
-        });
+        .then(result => res.send(result))
+        .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
 exports.approve = function (req, res) {
     auth_service.authenticated(req.session, 1)
         .then(() => {
             let db = req.app.get('db');
-            return salesman_service.approve(db, req.params.id, req.params.year, req.session.group);
+            let orange = req.app.get('oHRM');
+            return salesman_service.approve(db, req.params.id, req.params.year, req.session.group, orange);
         })
-        .then(result => {
-            res.send(result);
-        });
+        .then(result => res.send(result))
+        .catch((error) => res.status(error.statusCode).send(error.message));
 }
