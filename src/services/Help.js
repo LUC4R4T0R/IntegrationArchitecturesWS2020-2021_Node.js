@@ -1,3 +1,7 @@
+/*
+This file stores two methods. There purpose is to check for common errors. These methods are used in every Service file.
+ */
+
 let BadInputError = require('../custom_errors/BadInputError');
 let MissingElementError = require('../custom_errors/MissingElementError');
 
@@ -21,7 +25,7 @@ exports.checkIfOneOrMoreParamsAreUndefined = function (db, one, two, three) {
  *
  * @throws BadInputError
  */
-exports.checkForBadInput= function (id, year = "0",name="test") {
+exports.checkForBadInput = function (id, year = "0", name = "test") {
     if (!id.match(/^[\d]+$/g) || !year.match(/^[\d]+$/g) || !name.match(/^[\w ]+$/g)) {
         throw new BadInputError();
     }
