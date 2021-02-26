@@ -1,6 +1,6 @@
 const user_service = require('../services/UserService');
 const auth_service = require('../services/AuthenticationService');
-const User = require('../models/User');
+const UserApi = require('../models/User');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
@@ -37,7 +37,15 @@ exports.find = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-//updatePW
+exports.updatePw = function (req, res) {
+    auth_service.authenticated(req.session, 0)
+        .then(() => {
+            let db = req.app.get('db');
+            return user_service.updateUserPW(db, req.params.username, req.body.oldPw, req.body.newPw);
+        })
+        .then(result => res.send(result))
+        .catch((error) => res.status(error.statusCode).send(error.message));
+}
 
 exports.update = function (req, res) {
     auth_service.authenticated(req.session, 2)
@@ -62,7 +70,7 @@ exports.remove = function (req, res) {
 
 function inputFilter(user) {
     try{
-        return new User(user.displayname, user.username, user.password, user.group, user.employeeId);
+        return new UserApi(user.displayname, user.username, user.password, user.group, user.employeeId);
     }catch(e){
         throw new BadInputError('The given record does not match the model of an record!');
     }
