@@ -1,6 +1,6 @@
 const evaluationRecordEntry_service = require('../services/EvaluationRecordEntryService');
 const auth_service = require('../services/AuthenticationService');
-const EvaluationRecordEntry = require('../models/EvaluationRecordEntry');
+const EvaluationRecordEntryApi = require('../models/EvaluationRecordEntry');
 const BadInputError = require("../custom_errors/BadInputError");
 
 exports.create = function (req, res) {
@@ -9,8 +9,8 @@ exports.create = function (req, res) {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.createEvaluationRecordEntry(db, req.params.id, req.params.year, inputFilter(req.body));
         })
-        .then(() => res.send('success'))
-        .catch((error) => {console.log(error); res.status(error.statusCode).send(error.message)});
+        .then(result => res.send(result))
+        .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
 exports.list = function (req, res) {
@@ -40,7 +40,7 @@ exports.update = function (req, res) {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.updateEvaluationRecordEntry(db, req.params.id, req.params.year, inputFilter(req.body));
         })
-        .then(() => res.send('success'))
+        .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
@@ -50,14 +50,15 @@ exports.remove = function (req, res) {
             let db = req.app.get('db');
             return evaluationRecordEntry_service.deleteEvaluationRecordEntry(db, req.params.id, req.params.year, req.params.name);
         })
-        .then(() => res.send('success'))
+        .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
+
 function inputFilter(entry) {
-    try{
-        return new EvaluationRecordEntry(entry.name, entry.target, entry.actual);
-    }catch(e){
+    try {
+        return new EvaluationRecordEntryApi(entry.name, entry.target, entry.actual);
+    } catch (e) {
         throw new BadInputError('The given entry does not match the model of an entry!');
     }
 }

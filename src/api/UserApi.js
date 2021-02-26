@@ -13,7 +13,6 @@ exports.create = function (req, res) {
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
-
 exports.list = function (req, res) {
     auth_service.authenticated(req.session, 2)
         .then(() => {
@@ -28,7 +27,7 @@ exports.find = function (req, res) {
     auth_service.authenticated(req.session, 0)
         .then(() => {
             let db = req.app.get('db');
-            if (parseInt(req.params.username) === -1){
+            if (parseInt(req.params.username) === -1) {
                 return user_service.readOneUser(db, req.session.user);
             }
             return user_service.readOneUser(db, req.params.username);
@@ -53,7 +52,7 @@ exports.update = function (req, res) {
             let db = req.app.get('db');
             return user_service.updateUser(db, inputFilter(req.body));
         })
-        .then(() => res.send('success'))
+        .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
@@ -63,15 +62,15 @@ exports.remove = function (req, res) {
             let db = req.app.get('db');
             return user_service.deleteUser(db, req.params.username);
         })
-        .then(() => res.send('success'))
+        .then(result => res.send(result))
         .catch((error) => res.status(error.statusCode).send(error.message));
 }
 
 
 function inputFilter(user) {
-    try{
+    try {
         return new UserApi(user.displayname, user.username, user.password, user.group, user.employeeId);
-    }catch(e){
+    } catch (e) {
         throw new BadInputError('The given record does not match the model of an record!');
     }
 }
