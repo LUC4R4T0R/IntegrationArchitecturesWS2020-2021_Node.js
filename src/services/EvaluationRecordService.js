@@ -20,7 +20,10 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
     let {iD} = idAndYearToInt(id);
 
     //try to get the record from DB
-    let dbRecord = await db.collection("records").findOne({id: iD, "EvaluationRecord.year": evaluationRecord.year});
+    let dbRecord = await db.collection("records").findOne({
+        id: iD,
+        "EvaluationRecord.year": evaluationRecord.year
+    });
 
     //check if the dbRecord is null or not - false = end; true = continue
     let continueOrEnd = dbRecord !== null;
@@ -32,10 +35,12 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
     if (continueOrEnd) {
         throw new ElementDuplicateError(message);
     } else {
-        await db.collection("records").insertOne({id: iD, EvaluationRecord: new EvaluationRecordService(evaluationRecord.year, evaluationRecord.entries)});
+        await db.collection("records").insertOne({
+            id: iD,
+            EvaluationRecord: new EvaluationRecordService(evaluationRecord.year, evaluationRecord.entries)
+        });
     }
 };
-
 
 /**
  * This method reads the record of the salesman with the given id and in the the given year from the database.
@@ -90,7 +95,7 @@ exports.readAllEvaluationRecords = async function (db, id) {
     let records = await db.collection("records").find({id: iD}).toArray();
 
     //if no records where found return an empty list, else map the found records to the EvaluationRecord model and return the result
-    if(records.length === 0){
+    if (records.length === 0) {
         return [];
     } else {
         return records.map(record => {
