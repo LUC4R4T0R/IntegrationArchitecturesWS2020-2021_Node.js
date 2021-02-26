@@ -1,7 +1,7 @@
-let evaluationRecord_service = require('./EvaluationRecordService');
+let EvaluationRecordService = require('./EvaluationRecordService');
 let NoElementFoundError = require('../custom_errors/NoElementFoundError');
 let ElementDuplicateError = require('../custom_errors/ElementDuplicateError');
-let EvaluationRecordEntryService = require('../models/EvaluationRecordEntry');
+let EvaluationRecordEntryModel = require('../models/EvaluationRecordEntry');
 let helper_function = require('./Help');
 
 /**
@@ -19,7 +19,7 @@ exports.createEvaluationRecordEntry = async function (db, id, year, evaluationRe
     helper_function.checkForBadInput(id, year, evaluationRecordEntry.name);
 
     //get the record
-    let record = await evaluationRecord_service.readOneEvaluationRecord(db, id, year);
+    let record = await EvaluationRecordService.readOneEvaluationRecord(db, id, year);
 
     //get the entries
     let entries = await record.entries;
@@ -57,7 +57,7 @@ exports.readAllEvaluationRecordEntries = async function (db, id, year) {
 
     //map the entries to the entry model
     entries = entries.map(
-        entry => new EvaluationRecordEntryService(entry.name, entry.target, entry.actual)
+        entry => new EvaluationRecordEntryModel(entry.name, entry.target, entry.actual)
     );
 
     return entries;
@@ -85,7 +85,7 @@ exports.readOneEvaluationRecordEntry = async function (db, id, year, name) {
 
     //throw NoElementFoundError if no entry was found and continue if not
     if (entry.length > 0) {
-        return new EvaluationRecordEntryService(entry[0].name, entry[0].target, entry[0].actual);
+        return new EvaluationRecordEntryModel(entry[0].name, entry[0].target, entry[0].actual);
     } else {
         throw new NoElementFoundError("NoElementFoundError: In the given Database exists no EvaluationRecordEntry with the name: " + name + " !");
     }
@@ -108,7 +108,6 @@ exports.updateEvaluationRecordEntry = async function (db, id, year, evaluationRe
     let entries = await getAllEntriesOfThisSalesmanInThisYear(db, id, year);
 
     //change the entry
-    //TODO
     let changed = false;
     entries = entries.map(x => {
         if (x.name === evaluationRecordEntry.name) {
@@ -163,7 +162,7 @@ exports.deleteEvaluationRecordEntry = async function (db, id, year, name) {
  * @returns {Promise<[EvaluationRecordEntry]>} This method returns a list of entries.
  */
 function getAllEntriesOfThisSalesmanInThisYear(db, id, year) {
-    return evaluationRecord_service.readOneEvaluationRecord(db, id, year)
+    return EvaluationRecordService.readOneEvaluationRecord(db, id, year)
         .then((record) => {
             let entries = record.entries;
             if (entries === null) {
