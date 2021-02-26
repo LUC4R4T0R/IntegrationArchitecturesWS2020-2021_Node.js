@@ -4,7 +4,7 @@ const auth_service = require('../services/AuthenticationService');
 exports.isAuthenticated = function (req, res) {
     auth_service.authenticated(req.session).then(() => {
         res.send(true);
-    }).catch(() =>{
+    }).catch(() => {
         res.send(false);
     });
 }
