@@ -11,7 +11,7 @@ let helper_function = require('./Help');
  * @param amount the amount of the bonus
  * @returns {Promise<number>} This method returns the amount of the bonus.
  */
-exports.addBonus = async function (orange, id, year, amount) {
+const addBonus = async function (orange, id, year, amount) {
     //check for wrong or missing inputs
     helper_function.checkIfOneOrMoreParamsAreUndefined(orange, id, year, amount);
     helper_function.checkForBadInput(id, year);
@@ -74,7 +74,11 @@ exports.addRemark = async function (db, id, year, remark) {
     helper_function.checkForBadInput(id, year, remark);
 
     //try to get the order from db
-    let orderDb = db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
+    let orderDb = db.collection("review").findOne(
+        {
+            salesman_id: parseInt(id),
+            year: parseInt(year)
+        });
 
     //check if the dbOrder is null or not - not null = continue; null = end
     let endOrContinue = orderDb === null;
@@ -86,25 +90,48 @@ exports.addRemark = async function (db, id, year, remark) {
     if (endOrContinue) {
         throw new NoElementFoundError(message);
     } else {
-        await db.collection("review").updateOne({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {remarks : remark}});
+        await db.collection("review").updateOne(
+            {
+                salesman_id: parseInt(id),
+                year: parseInt(year)
+            },
+            {$set: {remarks: remark}});
     }
 }
 
+/**
+ * This method fetches the information from OpenCRX and renews them in the database or adds them if they dont exist.
+ *
+ * @param open the OpenCRX connection
+ * @param id the id of the salesman
+ * @param year the year of the review
+ * @param db the database
+ * @returns {Promise<JSON>} This method returns the review of a salesman in a given year.
+ */
 exports.renewOrder = async function (open, id, year, db) {
+    //check for wrong or missing inputs
+    helper_function.checkIfOneOrMoreParamsAreUndefined(open, id, year, db);
+
+    //get the entries
+    let performance = await db.collection('records').findOne({
+        id: parseInt(id),
+        'EvaluationRecord.year': parseInt(year)
+    });
+
+    //get the factor for the bonus calculation
     let f = await db.collection('settings').findOne({name: "socialBonusFactor"});
     let b = await db.collection('settings').findOne({name: "socialBonusBase"});
 
-    //get the entries
-    let performance = await db.collection('records').findOne({id: parseInt(id), 'EvaluationRecord.year': parseInt(year)});
+    //entry bonus calculation and adding to the final databsae entry
     let entries = [];
-    let newEntries = [];
-    if(performance){
+    let finalEntries = [];
+    if (performance) {
         entries = performance.EvaluationRecord.entries;
         if (!entries) {
-            newEntries = [];
+            finalEntries = [];
         } else {
             entries.forEach(e => {
-                newEntries.push({
+                finalEntries.push({
                     name: e.name,
                     target: e.target,
                     actual: e.actual,
@@ -114,36 +141,124 @@ exports.renewOrder = async function (open, id, year, db) {
         }
     }
 
-    let review = await db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
-    if (review){
-        await db.collection("review").deleteOne({salesman_id: parseInt(id), year: parseInt(year)});
+    //check if review already exists
+    let review = await db.collection("review").findOne({
+        salesman_id: parseInt(id),
+        year: parseInt(year)
+    });
+
+    //delete old review if it exists
+    if (review) {
+        await db.collection("review").deleteOne(
+            {
+                salesman_id: parseInt(id),
+                year: parseInt(year)
+            });
     }
+
+    //update the review
     await db.collection("review").insertOne(await open.getReview(id, year, db));
-    await db.collection("review").updateOne({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {performance : newEntries}});
+    await db.collection("review").updateOne(
+        {
+            salesman_id: parseInt(id),
+            year: parseInt(year)
+        },
+        {$set: {performance: finalEntries}});
+
+    //return the review
     return db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
 }
 
-exports.getOrder = async function (open, id, year, db){
-    let review = await db.collection("review").findOne({salesman_id: parseInt(id), year: parseInt(year)});
+/**
+ * This method reads a review from the database.
+ *
+ * @param open the OpenCRX connector
+ * @param id the id of the salesman
+ * @param year  the year of the review
+ * @param db the database
+ * @returns {Promise<JSON>} This method returns the review of a salesman in a given year.
+ */
+exports.getOrder = async function (open, id, year, db) {
+    //check for wrong or missing inputs
+    helper_function.checkIfOneOrMoreParamsAreUndefined(open, id, year, db);
 
-    if (review){
+    //get the review
+    let review = await db.collection("review").findOne({
+        salesman_id: parseInt(id),
+        year: parseInt(year)
+    });
+
+    //return the review or create it if it dont exists
+    if (review) {
         return review;
     } else {
         return this.renewOrder(open, id, year, db);
     }
 }
 
-exports.getYearsOfOrders = async function(open, id){
+/**
+ * This method gets all years where orders exists for a salesman.
+ *
+ * @param open the OpenCRX connector
+ * @param id the id of the salesman
+ * @returns {Promise<[Number]>} This method returns an array of the years where orders exists.
+ */
+exports.getYearsOfOrders = async function (open, id) {
+    //check for wrong or missing inputs
+    helper_function.checkIfOneOrMoreParamsAreUndefined(open, id);
+
     return open.getYearsOfOrders(id);
 }
 
-exports.approve = async function(db, id, year, group){
-    let grouP = parseInt(group);
-    if (grouP === 1){
-        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {salesmanApproved: true}});
-    } else if(grouP === 2){
-        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {hrApproved: true}});
+/**
+ * This method approves the review.
+ *
+ * @param db the database
+ * @param id the id of the salesman
+ * @param year the year of teh review
+ * @param group the group of the person that approves
+ * @param orange the OrangeHRM connector
+ * @returns {Promise<void>} This method returns nothing.
+ */
+exports.approve = async function (db, id, year, group, orange) {
+    //check for wrong or missing inputs
+    helper_function.checkIfOneOrMoreParamsAreUndefined(db, id, year, group);
+    helper_function.checkIfOneOrMoreParamsAreUndefined(orange, null, null, null);
+
+    //set the approve key of the person that approves to true
+    if (parseInt(group) === 1) {
+        await db.collection('review').findOneAndUpdate({
+                salesman_id: parseInt(id),
+                year: parseInt(year)
+            },
+            {$set: {salesmanApproved: true}});
+    } else if (parseInt(group) === 2) {
+        await db.collection('review').findOneAndUpdate({
+                salesman_id: parseInt(id),
+                year: parseInt(year)
+            },
+            {$set: {hrApproved: true}});
     } else {
-        await db.collection('review').findOneAndUpdate({salesman_id: parseInt(id), year: parseInt(year)}, {$set: {managementApproved: true}});
+        await db.collection('review').findOneAndUpdate({
+                salesman_id: parseInt(id),
+                year: parseInt(year)
+            },
+            {$set: {managementApproved: true}});
+    }
+
+    //add bonus to OrangeHRM if everyone approved it
+    let review = await db.collection('review').findOne({
+        salesman_id: parseInt(id),
+        year: parseInt(year)
+    });
+    if (review.salesmanApproved && review.hrApproved && review.managementApproved) {
+        let bonus = 0;
+        review.products.forEach(e => {
+            bonus += (e.bonus / 100);
+        });
+        review.performance.forEach(e => {
+            bonus += (e.bonus / 100);
+        });
+        await addBonus(orange, id, year, bonus);
     }
 }
