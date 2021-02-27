@@ -15,7 +15,6 @@ const addBonus = async function (orange, id, year, amount) {
     //check for wrong or missing inputs
     helper_function.checkIfOneOrMoreParamsAreUndefined(orange, id, year, amount);
     helper_function.checkForBadInput(id, year);
-    helper_function.checkForBadInput(amount);
 
     //add the bonus via the OrangeHRM connector function
     await orange.addBonusSalary(id, year, amount);
