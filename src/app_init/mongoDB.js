@@ -1,15 +1,17 @@
 const mongodb = require('mongodb');
+const user_service = require('../services/UserService');
+const User = require("../models/User");
 
 let defaultSettings = {
     socialBonusBase: 0,
-    socialBonusFactor: 1,
+    socialBonusFactor: 100,
     salesBonusBase: 0,
-    salesBonusFactor: 1,
-    customerRatingFactor1: 2,
-    customerRatingFactor2: 1.5,
+    salesBonusFactor: 0.05,
+    customerRatingFactor1: 1.5,
+    customerRatingFactor2: 1.25,
     customerRatingFactor3: 1,
-    customerRatingFactor4: 0.75,
-    customerRatingFactor5: 0.5,
+    customerRatingFactor4: 0.9,
+    customerRatingFactor5: 0.8,
     evaluationRecordEntryNames:[
         'Leadership Competence',
         'Openness to Employee',
@@ -22,7 +24,10 @@ let defaultSettings = {
 
 async function initMongoDB(app, config){
     await connectMongoDB(app, config);
-    await initSettings(app);
+    await Promise.all([
+        initSettings(app),
+        addDefaultUser(app)
+    ]);
 }
 
 async function connectMongoDB(app, config) {
@@ -47,7 +52,14 @@ async function initSettings(app){
             {upsert: true}
         );
     }
+}
 
+async function addDefaultUser(app){
+    let db = app.get('db');
+    if((await db.collection('users').find({username: 'admin'}).toArray()).length < 1){
+        await user_service.createUser(db, new User('admin', 'admin', 'admin', 4));
+        console.warn('Default admin user-account created. Please change its password immediately!');
+    }
 }
 
 exports.initMongoDB = initMongoDB;
