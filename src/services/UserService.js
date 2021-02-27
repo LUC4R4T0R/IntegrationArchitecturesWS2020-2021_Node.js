@@ -47,7 +47,7 @@ exports.readAllUsers = async function (db) {
 
     //return a list of all users if at least one user was found and throw an error in every other case
     if (!allUsers) {
-        throw new NoElementFoundError('NoElementFoundError: No user was found!');
+        return [];
     } else {
         return allUsers.map(user => {
             if (user.employeeId) {
