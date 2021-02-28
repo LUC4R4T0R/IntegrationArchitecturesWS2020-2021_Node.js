@@ -1,13 +1,14 @@
-#-----------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 #general
 swagger: "2.0"
 info:
   title: "Integration Architecture"
-  description: "This API shows all our endpoints. By clicking on an endpoint you will get a detailed description and
-    the possibility to try out if and how the endpoints work."
+  description: "This API shows all our endpoints. By clicking on an endpoint you will get a detailed
+    description and the possibility to try out if and how the endpoints work."
   version: 1.0.0
 host:
   localhost:8080
+basePath: /api
 schemes:
   - http
 consumes:
@@ -15,324 +16,515 @@ consumes:
 produces:
   - application/json
 
-#-----------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
 #endpoint description
 paths:
+  /auth:
+    #authenticate
+    post:
+      tags:
+        - Authentication
+      operationId: postAuthentication
+      summary: authenticate the user
+      description: This method authenticates a user.
+      deprecated: false
+      parameters:
+        - in: formData
+          type: string
+          name: name
+        - in: formData
+          type: string
+          name: password
+      responses:
+        200:
+          description: "Success"
+    get:
+      tags:
+        - Authentication
+      operationId: getAuthentication
+      summary: checks if user is authenticated
+      description: This method checks if a user is authenticated.
+      deprecated: false
+      responses:
+        200:
+          description: "Success"
+    delete:
+      tags:
+        - Authentication
+      operationId: deleteAuthentication
+      summary: deauthenticates a user
+      description: This method deauthenticates a user.
+      deprecated: false
+      responses:
+        200:
+          description: "Success"
+  /user:
+    post:
+      tags:
+        - User
+      operationId: postUser
+      summary: create a new user
+      description: This method creates a new user.
+      deprecated: false
+      parameters:
+        - in: body
+          name: user
+          description: the new user
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: "Success"
+    get:
+      tags:
+        - User
+      operationId: getUser
+      summary: gets all user
+      description: This method returns all user.
+      deprecated: false
+      responses:
+        200:
+          description: the requested users
+          schema:
+            $ref: '#/definitions/User'
+    put:
+      tags:
+        - User
+      operationId: updateUser
+      summary: updates a user
+      description: This method updates a user.
+      deprecated: false
+      parameters:
+        - in: body
+          name: user
+          description: the new user
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: "Success"
+  /user/:username:
+    get:
+      tags:
+        - User
+      operationId: getOneUser
+      summary: gets one user
+      description: This method returns one user.
+      deprecated: false
+      parameters:
+        - in: path
+          name: username
+          required: true
+          type: string
+      responses:
+        200:
+          description: the requested users
+          schema:
+            $ref: '#/definitions/User'
+    delete:
+      tags:
+        - User
+      operationId: deleteUser
+      summary: delets one user
+      description: This method deletes one user.
+      deprecated: false
+      parameters:
+        - in: path
+          name: username
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Success"
+  /username/:username/pw:
+    put:
+      tags:
+        - User
+      operationId: updateUserPw
+      summary: updates a users password
+      description: This method updates a users password.
+      deprecated: false
+      parameters:
+        - in: path
+          name: username
+          required: true
+          type: string
+        - in: body
+          name: userpasswords
+          description: the old and new password
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: "Success"
+  /settings:
+    put:
+      tags:
+        - Settings
+      operationId: updateSetting
+      summary: updates a setting
+      description: This method updates a setting.
+      deprecated: false
+      parameters:
+        - in: body
+          name: userpasswords
+          description: the old and new password
+          schema:
+            $ref: '#/definitions/Setting'
+      responses:
+        200:
+          description: "Success"
+  /settings/:name:
+    get:
+      tags:
+        - Settings
+      operationId: getSetting
+      summary: gets a setting
+      description: This method gets a setting.
+      deprecated: false
+      parameters:
+        - in: path
+          name: name
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Success"
   /salesman:
-    #create a salesman
+    get:
+      tags:
+        - Salesman
+      operationId: getSalesmen
+      summary: gets all salesmen
+      description: This method gets all salesmen.
+      deprecated: false
+      responses:
+        200:
+          description: the requested salesmen
+          schema:
+            $ref: '#/definitions/Salesman'
+  /salesman/:id:
+    get:
+      tags:
+        - Salesman
+      operationId: getOneSalesman
+      summary: get one salesman
+      description: This method gets one salesman.
+      deprecated: false
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: number
+      responses:
+        200:
+          description: the requested salesman
+          schema:
+            $ref: '#/definitions/Salesman'
+  /salesman/:id/bonus/:year/refresh_review:
+    get:
+      tags:
+        - Salesman
+      operationId: getNewReview
+      summary: refresh review
+      description: This method refreshes the review.
+      deprecated: false
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
+      responses:
+        200:
+          description: 'Success'
+  /salesman/:id/bonus/:year/get_review:
+    get:
+      tags:
+        - Salesman
+      operationId: getReview
+      summary: get review
+      description: This method gets the review.
+      deprecated: false
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
+      responses:
+        200:
+          description: 'Success'
+  /salesman/:id/bonus/get_years:
+    get:
+      tags:
+        - Salesman
+      operationId: getYears
+      summary: get the years where orders exist
+      description: This method gets the years where oreders for a salesman exist.
+      deprecated: false
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        200:
+          description: 'Success'
+  /salesman/:id/bonus/:year/set_remarks:
     post:
       tags:
         - Salesman
-      operationId: createSalesman
-      summary: create a new Salesman
-      description: This Method creates a new Salesman. If this process workes, the server will return "success".
-        In every other case the server response will be an Error.
-      deprecated: true
-      parameters:
-        - $ref: '#/parameters/salesman'
-      responses:
-        200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        409:
-          $ref: '#/responses/ElementDuplicateError'
-    #get all Salesman
-    get:
-      tags:
-        - Salesman
-      operationId: getAllSalesmen
-      summary: gets all Salesmen
-      description: This method returns a list of all Salesmen. In case of an Error there will be a message that
-        describes what went wrong.
-      deprecated: false
-      responses:
-        200:
-          $ref: '#/responses/SuccessReturnSalesman'
-        400:
-          $ref: '#/responses/MissingElementError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-    #update a salesman
-    put:
-      tags:
-        - Salesman
-      operationId: updateSalesman
-      summary: update a Salesman
-      description: This Method updates a Salesman. If this process workes, the server will return "success".
-        In every other case the server response will be an Error.
-      deprecated: true
-      parameters:
-        - $ref: '#/parameters/salesman'
-      responses:
-        200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-
-  /salesman/{id}:
-    #get a specific Salesman by id
-    get:
-      tags:
-        - Salesman
-      operationId: getOneSalesmanById
-      summary: gets one Salesman with the given id
-      description: This method returns the Salesman with the given id. In case of an Error there will be a message
-        that describes what went wrong.
+      operationId: postRemark
+      summary: creates a remark for a review
+      description: This method creates a remark for a review.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
+        - in: formData
+          name: remark
+          type: string
       responses:
         200:
-          description: Success
-          schema:
-            $ref: '#/definitions/Salesman'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-    #delete a specific salesman by id
-    delete:
+          description: 'Success'
+  /salesman/:id/bonus/:year/approve_bonus:
+    post:
       tags:
         - Salesman
-      operationId: deleteOneSalesmanById
-      summary: delete the Salesman with the given id
-      description: This method deltes the Salesman with the given id. In case of an Error there will be a message that
-        describes what went wrong.
-      deprecated: true
+      operationId: postApprove
+      summary: approves a review
+      description: This method approves a review.
+      deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
       responses:
         200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-
-  /salesman/{id}/evaluationrecord:
-    #create an EvaluationRecords
+          description: 'Success'
+  /salesman/:id/evaluationrecord:
     post:
       tags:
         - EvaluationRecord
-      operationId: postOneEvaluationRecord
-      summary: create an EvaluationRecord for the Salesman with the given Id
-      description: This method creates an Evaluationrecord. In case of an Error there will be a message that
-        describes what went wrong.
+      operationId: postRecord
+      summary: creates a record
+      description: This method creates a record.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
+        - in: path
+          name: id
+          required: true
+          type: string
         - $ref: '#/parameters/evaluationrecord'
       responses:
         200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        409:
-          $ref: '#/responses/ElementDuplicateError'
-    #get all EvaluationRecords of an Salesman
+          description: 'Success'
     get:
       tags:
         - EvaluationRecord
-      operationId: getAllEvaluationRecords
-      summary: gets all EvaluationRecords
-      description: This method returns a list of all EvaluationRecords. In case of an Error there will be a message that
-        describes what went wrong.
-      deprecated: false
-      responses:
-        200:
-          $ref: '#/responses/SuccessReturnEvaluationRecord'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-
-  /salesman/{id}/evaluationrecord/{year}:
-    #get the EvaluationRecord of an Salesman of the given year
-    get:
-      tags:
-        - EvaluationRecord
-      operationId: getOneEvaluationRecordByIdAndYear
-      summary: gets one EvaluationRecord with the given id and year
-      description: This method returns a the EvaluationRecord with the given id and year. In case of an Error there will be a message
-        that describes what went wrong.
+      operationId: getRecords
+      summary: gets all records
+      description: This method gets all records.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
+        - in: path
+          name: id
+          required: true
+          type: string
       responses:
         200:
-          description: Success
+          description: the requested records
           schema:
             $ref: '#/definitions/EvaluationRecord'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-    #delete a specific EvaluationRecord by id and year
+  /salesman/:id/evaluationrecord/:year:
+    get:
+      tags:
+        - EvaluationRecord
+      operationId: getOneRecord
+      summary: gets one records
+      description: This method gets one record.
+      deprecated: false
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
+      responses:
+        200:
+          description: the requested record
+          schema:
+            $ref: '#/definitions/EvaluationRecord'
     delete:
       tags:
         - EvaluationRecord
-      operationId: deleteOneEvaluationRecordByIdAndYear
-      summary: delete the EvaluationRecord with the given id and year
-      description: This method deltes the EvaluationRecord with the given id and year. In case of an Error there will be a message that
-        describes what went wrong.
+      operationId: deleteRecord
+      summary: deletes one records
+      description: This method deletes one record.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
       responses:
         200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-
-  /salesman/{id}/evaluationrecord/{year}/entry:
-    #create an EvaluationRecordEntry
+          description: 'Success'
+  /salesman/:id/evaluationrecord/:year/entry:
     post:
       tags:
         - EvaluationRecordEntry
-      operationId: postOneEvaluationRecordEntry
-      summary: create an EvaluationRecordEntry for the Salesman with the given Id and year
-      description: This method creates an EvaluationrecordEntry. In case of an Error there will be a message that
-        describes what went wrong.
+      operationId: createEntry
+      summary: creates a entry
+      description: This method creates an entry.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
         - $ref: '#/parameters/evaluationrecordentry'
       responses:
         200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-        409:
-          $ref: '#/responses/ElementDuplicateError'
-    #get all EvaluationRecordEntries of an EvaluationRecord of an Salesman
+          description: 'Success'
     get:
       tags:
         - EvaluationRecordEntry
-      operationId: getAllEvaluationRecordEntries
-      summary: gets all EvaluationRecordEntries
-      description: This method returns a list of all EvaluationRecordEntries of one EvaluationRecord. In case of an
-        Error there will be a message that describes what went wrong.
+      operationId: getAllEntry
+      summary: gets all entries
+      description: This method gets all entries.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
       responses:
         200:
-          $ref: '#/responses/SuccessReturnEvaluationRecordEntry'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-    #update an EvaluationRecordEntry
+          description: the requested entries
+          schema:
+            $ref: '#/definitions/EvaluationRecordEntry'
     put:
       tags:
         - EvaluationRecordEntry
-      operationId: updateEvaluationRecordEntry
-      summary: update an EvaluationRecordEntry
-      description: This Method updates an EvaluationRecordEntry. If this process workes, the server will
-        return "success". In every other case the server response will be an Error.
+      operationId: updateEntry
+      summary: update entry
+      description: This method updates an entry.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
         - $ref: '#/parameters/evaluationrecordentry'
       responses:
         200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-
-  /salesman/{id}/evaluationrecord/{year}/entry/{name}:
-    #get the EvaluationRecordEntry of the EvaluationRecord of an Salesman of the given year with the given name
+          description: 'Success'
+  /salesman/:id/evaluationrecord/:year/entry/:name:
     get:
       tags:
         - EvaluationRecordEntry
-      operationId: getOneEvaluationRecordEntryByIdAndYearAndName
-      summary: gets one EvaluationRecordEntry with the given id and year and name
-      description: This method returns a the EvaluationRecordEntry with the given id, year and name. In case of an
-        Error there will be a message that describes what went wrong.
+      operationId: getOneEntry
+      summary: get one entry
+      description: This method updates an entry.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
-        - $ref: '#/parameters/name'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
+        - in: path
+          name: name
+          type: string
+          required: true
       responses:
         200:
-          description: Success
+          description: the requested entry
           schema:
             $ref: '#/definitions/EvaluationRecordEntry'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
-    #delete an EvaluationRecordEntry
     delete:
       tags:
         - EvaluationRecordEntry
-      operationId: deleteOneEvaluationRecordEntryByIdAndYearAnd name
-      summary: delete the EvaluationRecordEntry with the given id and year and name
-      description: This method deltes the EvaluationRecordEntry with the given id,year and name. In case of an Error
-        there will be a message that describes what went wrong.
+      operationId: deleteEntry
+      summary: delete an entry
+      description: This method deletes an entry.
       deprecated: false
       parameters:
-        - $ref: '#/parameters/id'
-        - $ref: '#/parameters/year'
-        - $ref: '#/parameters/name'
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: path
+          name: year
+          required: true
+          type: string
+        - in: path
+          name: name
+          type: string
+          required: true
       responses:
         200:
-          $ref: '#/responses/Success'
-        400:
-          $ref: '#/responses/MissingElementError'
-        510:
-          $ref: '#/responses/BadInputError'
-        404:
-          $ref: '#/responses/NoSuchElementError'
+          description: 'Success'
 
-#-----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------
 #model descriptions
 definitions:
+  #Setting
+  Setting:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: number
+    required:
+      - name
+      - value
   #Salesman definition
   Salesman:
     type: object
     properties:
-      _id:
-        type: string
       id:
         type: integer
       firstname:
@@ -378,95 +570,29 @@ definitions:
       - target
       - actual
       - name
-
-#-----------------------------------------------------------------------------------------------------------------------
-#response descriptions
-responses:
-  'Success':
-    description: Success
-    schema:
-      example: "success"
-  'SuccessReturnSalesman':
-    description: Success
-    schema:
-      type: array
-      minItems: 1
-      items:
-        $ref: '#/definitions/Salesman'
-  'SuccessReturnEvaluationRecord':
-    description: Success
-    schema:
-      type: array
-      minItems: 1
-      items:
-        $ref: '#/definitions/EvaluationRecord'
-  'SuccessReturnEvaluationRecordEntry':
-    description: Success
-    schema:
-      type: array
-      minItems: 1
-      items:
-        $ref: '#/definitions/EvaluationRecordEntry'
-  'MissingElementError':
-    description: MissingElementError
-    schema:
-      example: "MissingElementError: At least one of the required parameters is undefined!"
-  'BadInputError':
-    description: BadInputError
-    schema:
-      example: "BadInputError: At least one of the given params was not allowed!
-                Id's must be at least one integer long and strings at least one character long!"
-  'ElementDuplicateError':
-    description: ElementDuplicateError
-    schema:
-      example: "ElementDuplicateError: You tried to create an Object that already exists!"
-  'NoSuchElementError':
-    description: NoSuchElementError
-    schema:
-      example: "NoElementFoundError: In the given Database exists no Object related to your request!"
-
-#-----------------------------------------------------------------------------------------------------------------------
+  #User definition
+  User:
+    type: object
+    properties:
+      displayname:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      group:
+        type: number
+      employeeId:
+        type: number
+    required:
+      - displayname
+      - username
+      - password
+      - group
+#---------------------------------------------------------------------------------------------------
 #parameter descriptions
 parameters:
-  #path variable
-  id:
-    in: path
-    name: id
-    type: integer
-    required: true
-    description: The Id of the Salesman
-  year:
-    in: path
-    name: year
-    type: integer
-    required: true
-    description: The year of the Record
-  name:
-    in: path
-    name: name
-    type: string
-    required: true
-    description: The name of the entry
-
   #body parameter
-  salesman:
-    name: Salesman
-    in: body
-    description: The Salesman that you want to post/put
-    required: true
-    schema:
-      type: object
-      properties:
-        id:
-          type: integer
-        firstname:
-          type: string
-        lastname:
-          type: string
-      required:
-        - id
-        - firstname
-        - lastname
   evaluationrecord:
     name: EvaluationRecord
     in: body

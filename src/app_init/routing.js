@@ -30,22 +30,22 @@ async function applyRouting(app, apiRouter) {
     // Users
     userRouter.post('', User.create);
     userRouter.get('', User.list);
-    userRouter.get('/:username', User.find);
     userRouter.put('', User.update);
-    userRouter.put('/:username/pw', User.updatePw)
+    userRouter.get('/:username', User.find);
     userRouter.delete('/:username', User.remove);
+    userRouter.put('/:username/pw', User.updatePw)
 
     // Settings
-    settingsRouter.get('/:name', Settings.getSetting);
     settingsRouter.put('', Settings.setSetting);
+    settingsRouter.get('/:name', Settings.getSetting);
 
     // Salesman
     salesmanRouter.get('', Salesman.list);
     salesmanRouter.get('/:id', Salesman.find);
     salesmanRouter.get('/:id/bonus/:year/refresh_review',Salesman.renewOrder);
     salesmanRouter.get('/:id/bonus/:year/get_review',Salesman.getOrder);
-    salesmanRouter.post('/:id/bonus/:year/set_remarks',Salesman.addRemark);
     salesmanRouter.get('/:id/bonus/get_years',Salesman.getYearsOfOrders);
+    salesmanRouter.post('/:id/bonus/:year/set_remarks',Salesman.addRemark);
     salesmanRouter.post('/:id/bonus/:year/approve_bonus',Salesman.approve);
 
     // EvaluationRecord
@@ -57,8 +57,8 @@ async function applyRouting(app, apiRouter) {
     // EvaluationRecordEntry
     salesmanRouter.post('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.create);
     salesmanRouter.get('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.list);
-    salesmanRouter.get('/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.find);
     salesmanRouter.put('/:id/evaluationrecord/:year/entry', EvaluationRecordEntry.update);
+    salesmanRouter.get('/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.find);
     salesmanRouter.delete('/:id/evaluationrecord/:year/entry/:name', EvaluationRecordEntry.remove);
 }
 
