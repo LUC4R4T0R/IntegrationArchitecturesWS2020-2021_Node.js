@@ -22,7 +22,6 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "supertest": "^6.0.1",
     "mocha": "^8.2.1",
     "sinon": "^9.2.2",
     "sinon-mongo": "^1.1.0"
