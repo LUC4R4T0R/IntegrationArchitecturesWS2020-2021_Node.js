@@ -121,14 +121,11 @@ exports.deleteEvaluationRecord = async function (db, id, year) {
     //try to get the record from DB
     let dbRecord = await db.collection("records").findOne({id: iD, "EvaluationRecord.year": yeaR});
 
-    //check if the dbRecord is null or not - not null = continue; null = end
-    let endOrContinue = dbRecord === null;
-
     //message in case that no record with the given params exists
     let message = "NoElementFoundError: In the given Database exists no EvaluationRecord with the id: " + id + " and the year: " + year + "!";
 
     //throw NoElementFoundError if record dont exists and continue if not
-    if (endOrContinue) {
+    if (!dbRecord) {
         throw new NoElementFoundError(message);
     } else {
         await db.collection("records").deleteOne({id: iD, "EvaluationRecord.year": yeaR});
