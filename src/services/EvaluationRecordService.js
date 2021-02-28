@@ -25,14 +25,11 @@ exports.createEvaluationRecord = async function (db, id, evaluationRecord) {
         "EvaluationRecord.year": evaluationRecord.year
     });
 
-    //check if the dbRecord is null or not - false = end; true = continue
-    let continueOrEnd = dbRecord !== null;
-
     //message in case that the record already exists
     let message = "ElementDuplicateError: You tried to create an EvaluationRecord that already exists!";
 
     //throw ElementDuplicateError if record already exists and continue if not
-    if (continueOrEnd) {
+    if (dbRecord) {
         throw new ElementDuplicateError(message);
     } else {
         await db.collection("records").insertOne({
