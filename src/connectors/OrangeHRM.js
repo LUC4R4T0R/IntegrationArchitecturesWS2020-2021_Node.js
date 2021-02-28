@@ -124,10 +124,11 @@ class OrangeHRMConnector{
     async addBonusSalary(id, year, amount){
         let formData = new FormData();
         formData.append('year', year);
-        formData.append('value', amount);
+        formData.append('value', Math.round(amount));
 
         try{
             let emp_id = await this.resolveEmployeeId(id);
+            console.log("hallo");
             let request = await axios.post(
                 this.url+'/api/v1/employee/' + emp_id + '/bonussalary',
                 formData,
