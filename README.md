@@ -10,7 +10,7 @@ Datenbank.
 Die REST-API die diese Anwendung bereitstellt, kann einfach mit dem passenden [Angular Frontend](https://github.com/LUC4R4T0R/IntegrationArchitecturesWS2020-2021_Angular)
 verwendet werden.
 
-Nach dem Start der beider Anwendungen gibt es standartmäßig einen user mit username admin und password admin.
+Beim Start der Anwendung wird ein user mit username admin und password admin, falls kein User mit diesem Namen existiert.
 
 ## Installation
 
